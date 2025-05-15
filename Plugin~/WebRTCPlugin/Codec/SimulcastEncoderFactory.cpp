@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "SimulcastEncoderFactory.h"
 
 #include <memory>
 #include <vector>
@@ -12,7 +12,7 @@
 #include <media/engine/simulcast_encoder_adapter.h>
 #include <rtc_base/checks.h>
 
-#include "SimulcastEncoderFactory.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -34,25 +34,35 @@ namespace webrtc
             }
 
             VideoEncoderFactory::CodecSupport
-            QueryCodecSupport(const SdpVideoFormat& format, absl::optional<std::string> scalability_mode) const override
+            QueryCodecSupport(const SdpVideoFormat& format, std::optional<std::string> scalability_mode) const override
             {
                 // Format must be one of the internal formats.
                 RTC_DCHECK(format.IsCodecInList(internal_encoder_factory_->GetSupportedFormats()));
                 return internal_encoder_factory_->QueryCodecSupport(format, scalability_mode);
             }
 
-            std::unique_ptr<VideoEncoder> CreateVideoEncoder(const SdpVideoFormat& format) override
+            std::unique_ptr<VideoEncoder> Create(const Environment& env, const SdpVideoFormat& format) override
             {
                 // Try creating internal encoder.
                 std::unique_ptr<VideoEncoder> internal_encoder;
                 if (format.IsCodecInList(internal_encoder_factory_->GetSupportedFormats()))
                 {
-                    internal_encoder =
-                        std::make_unique<SimulcastEncoderAdapter>(internal_encoder_factory_.get(), format);
+                    internal_encoder = std::make_unique<SimulcastEncoderAdapter>(
+                        env, internal_encoder_factory_.get(), nullptr, format);
                 }
 
                 return internal_encoder;
             }
+            // std::unique_ptr<VideoEncoder> CreateVideoEncoder(const SdpVideoFormat& format) override {
+            //     // Try creating internal encoder.
+            //     std::unique_ptr<VideoEncoder> internal_encoder;
+            //     if (format.IsCodecInList(internal_encoder_factory_->GetSupportedFormats())) {
+            //         internal_encoder =
+            //             std::make_unique<SimulcastEncoderAdapter>(internal_encoder_factory_.get(), format);
+            //     }
+
+            //     return internal_encoder;
+            // }
 
             std::vector<SdpVideoFormat> GetSupportedFormats() const override
             {

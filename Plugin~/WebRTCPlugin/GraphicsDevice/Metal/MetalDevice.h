@@ -1,8 +1,8 @@
 #pragma once
 
-#include "IUnityGraphicsMetal.h"
-
 #include <Metal/Metal.h>
+
+#include "IUnityGraphicsMetal.h"
 
 namespace unity
 {

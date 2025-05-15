@@ -361,6 +361,11 @@ namespace Unity.WebRTC
             return NativeMethods.ContextGetStatsList(self, report, out length, ref types);
         }
 
+        public IntPtr StatsToJson(string statsID)
+        {
+            return NativeMethods.ContextStatsToJson(self, statsID);
+        }
+
         public void DeleteStatsReport(IntPtr report)
         {
             NativeMethods.ContextDeleteStatsReport(self, report);

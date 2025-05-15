@@ -1,15 +1,14 @@
---- BUILD.gn	2022-11-30 15:53:16.000000000 +0900
-+++ BUILD.gn.patch	2022-11-30 14:19:37.000000000 +0900
-@@ -103,9 +103,9 @@
-       sources += [ "default_task_queue_factory_libevent.cc" ]
-       deps += [ "../../rtc_base:rtc_task_queue_libevent" ]
-     }
--  } else if (is_mac || is_ios) {
+--- src/api/task_queue/BUILD.gn	2025-05-15 18:43:02
++++ src/api/task_queue/BUILD_new.gn	2025-05-15 18:44:21
+@@ -90,10 +90,7 @@
+     "../../rtc_base/memory:always_valid_pointer",
+   ]
+ 
+-  if (is_mac || is_ios) {
 -    sources += [ "default_task_queue_factory_gcd.cc" ]
 -    deps += [ "../../rtc_base:rtc_task_queue_gcd" ]
-+#  } else if (is_mac || is_ios) {
-+#    sources += [ "default_task_queue_factory_gcd.cc" ]
-+#    deps += [ "../../rtc_base:rtc_task_queue_gcd" ]
-   } else if (is_win && current_os != "winuwp") {
+-  } else if (is_win && current_os != "winuwp" && !build_with_chromium) {
++  if (is_win && current_os != "winuwp" && !build_with_chromium) {
      sources += [ "default_task_queue_factory_win.cc" ]
      deps += [ "../../rtc_base:rtc_task_queue_win" ]
+   } else {

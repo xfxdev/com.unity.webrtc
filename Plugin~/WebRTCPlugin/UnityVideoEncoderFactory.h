@@ -21,9 +21,9 @@ namespace webrtc
         // Returns information about how this format will be encoded. The specified
         // format must be one of the supported formats by this factory.
         CodecSupport
-        QueryCodecSupport(const SdpVideoFormat& format, absl::optional<std::string> scalability_mode) const override;
-        // Creates a VideoEncoder for the specified format.
-        std::unique_ptr<VideoEncoder> CreateVideoEncoder(const SdpVideoFormat& format) override;
+        QueryCodecSupport(const SdpVideoFormat& format, std::optional<std::string> scalability_mode) const override;
+
+        std::unique_ptr<VideoEncoder> Create(const Environment& env, const SdpVideoFormat& format) override;
 
         UnityVideoEncoderFactory(IGraphicsDevice* gfxDevice, ProfilerMarkerFactory* profiler);
         ~UnityVideoEncoderFactory() override;
@@ -32,5 +32,5 @@ namespace webrtc
         ProfilerMarkerFactory* profiler_;
         std::map<std::string, std::unique_ptr<VideoEncoderFactory>> factories_;
     };
-}
-}
+} // namespace webrtc
+} // namespace unity

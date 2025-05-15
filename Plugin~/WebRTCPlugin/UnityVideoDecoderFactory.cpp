@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "UnityVideoDecoderFactory.h"
 
 #include <api/video_codecs/video_codec.h>
 #include <media/engine/internal_decoder_factory.h>
@@ -8,7 +8,7 @@
 #include "GraphicsDevice/GraphicsUtility.h"
 #include "ProfilerMarkerFactory.h"
 #include "ScopedProfiler.h"
-#include "UnityVideoDecoderFactory.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -94,11 +94,10 @@ namespace webrtc
         return GetSupportedFormatsInFactories(factories_);
     }
 
-    std::unique_ptr<webrtc::VideoDecoder>
-    UnityVideoDecoderFactory::CreateVideoDecoder(const webrtc::SdpVideoFormat& format)
+    std::unique_ptr<VideoDecoder> UnityVideoDecoderFactory::Create(const Environment& env, const SdpVideoFormat& format)
     {
         VideoDecoderFactory* factory = FindCodecFactory(factories_, format);
-        auto decoder = factory->CreateVideoDecoder(format);
+        auto decoder = factory->Create(env, format);
         if (!profiler_)
             return decoder;
 

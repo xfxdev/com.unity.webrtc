@@ -1,9 +1,10 @@
-#include "pch.h"
+#include "PeerConnectionObject.h"
 
 #include <rtc_base/strings/json.h>
 
 #include "Context.h"
-#include "PeerConnectionObject.h"
+#include "Utils.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -292,24 +293,6 @@ namespace webrtc
     void PeerConnectionObject::ReceiveStatsReport(const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
     {
         context.AddStatsReport(report);
-    }
-
-    bool PeerConnectionObject::GetSessionDescription(
-        const webrtc::SessionDescriptionInterface* sdp, RTCSessionDescription& desc) const
-    {
-        if (sdp == nullptr)
-        {
-            return false;
-        }
-
-        std::string out;
-        sdp->ToString(&out);
-
-        desc.type = ConvertSdpType(sdp->GetType());
-        desc.sdp = static_cast<char*>(CoTaskMemAlloc(out.size() + 1));
-        out.copy(desc.sdp, out.size());
-        desc.sdp[out.size()] = '\0';
-        return true;
     }
 } // end namespace webrtc
 } // end namespace unity

@@ -1,4 +1,5 @@
 #pragma once
+#include <api/frame_transformer_interface.h>
 #include <rtc_base/synchronization/mutex.h>
 
 #include "WebRTCPlugin.h"
@@ -30,6 +31,8 @@ namespace webrtc
         void UnregisterTransformedFrameSinkCallback(uint32_t ssrc) override;
         void Transform(std::unique_ptr<::webrtc::TransformableFrameInterface> frame) override;
         void SendFrameToSink(std::unique_ptr<::webrtc::TransformableFrameInterface> frame);
+
+        static rtc::scoped_refptr<EncodedStreamTransformer> Create();
 
     private:
         std::vector<std::pair<uint32_t, rtc::scoped_refptr<webrtc::TransformedFrameCallback>>> sink_callbacks_;

@@ -46,7 +46,6 @@ namespace webrtc
             rtc::scoped_refptr<SetRemoteDescriptionObserverInterface>,
             std::string& error);
 
-        bool GetSessionDescription(const SessionDescriptionInterface* sdp, RTCSessionDescription& desc) const;
         RTCErrorType SetConfiguration(const std::string& config);
         std::string GetConfiguration() const;
         void CreateOffer(const RTCOfferAnswerOptions& options, CreateSessionDescriptionObserver* observer);

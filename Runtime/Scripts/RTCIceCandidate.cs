@@ -112,19 +112,14 @@ namespace Unity.WebRTC
 
         public static RTCIceCandidateType ParseRTCIceCandidateType(this string src)
         {
-            switch (src)
+            return src switch
             {
-                case "local":
-                    return RTCIceCandidateType.Host;
-                case "stun":
-                    return RTCIceCandidateType.Srflx;
-                case "prflx":
-                    return RTCIceCandidateType.Prflx;
-                case "relay":
-                    return RTCIceCandidateType.Relay;
-                default:
-                    throw new ArgumentException($"Invalid parameter: {src}");
-            }
+                "host" => RTCIceCandidateType.Host,
+                "srflx" => RTCIceCandidateType.Srflx,
+                "prflx" => RTCIceCandidateType.Prflx,
+                "relay" => RTCIceCandidateType.Relay,
+                _ => throw new ArgumentException($"Invalid parameter: {src}"),
+            };
         }
 
 

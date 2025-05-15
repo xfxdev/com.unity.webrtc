@@ -2,7 +2,7 @@
 
 #include <shared_mutex>
 
-#include <common_video/include/video_frame_buffer.h>
+// #include <common_video/include/video_frame_buffer.h>
 #include <rtc_base/ref_counted_object.h>
 
 #include "GraphicsDevice/GraphicsDevice.h"
@@ -29,7 +29,7 @@ namespace webrtc
     };
 
     class ITexture2D;
-    class GpuMemoryBufferInterface : public rtc::RefCountInterface
+    class GpuMemoryBufferInterface : public webrtc::RefCountInterface
     {
     public:
         virtual Size GetSize() const = 0;
@@ -67,5 +67,5 @@ namespace webrtc
         std::unique_ptr<ITexture2D> textureCpuRead_;
         std::unique_ptr<GpuMemoryBufferHandle> handle_;
     };
-}
-}
+} // namespace webrtc
+} // namespace unity

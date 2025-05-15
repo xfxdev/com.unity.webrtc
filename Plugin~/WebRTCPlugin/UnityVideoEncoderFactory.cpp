@@ -1,15 +1,16 @@
-#include "pch.h"
+#include "UnityVideoEncoderFactory.h"
+
+#include <tuple>
 
 #include <api/video_codecs/video_encoder.h>
 #include <media/engine/internal_encoder_factory.h>
 #include <modules/video_coding/include/video_error_codes.h>
-#include <tuple>
 
 #include "Codec/CreateVideoCodecFactory.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 #include "ProfilerMarkerFactory.h"
 #include "ScopedProfiler.h"
-#include "UnityVideoEncoderFactory.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -126,7 +127,8 @@ namespace webrtc
         std::vector<SdpVideoFormat> supported_codecs = GetSupportedFormatsInFactories(factories_);
 
         // Set video codec order: default video codec is VP8
-        auto findIndex = [&](webrtc::SdpVideoFormat& format) -> long {
+        auto findIndex = [&](webrtc::SdpVideoFormat& format) -> long
+        {
             const std::string sortOrder[4] = { "VP8", "VP9", "H264", "AV1X" };
             auto it = std::find(std::begin(sortOrder), std::end(sortOrder), format.name);
             if (it == std::end(sortOrder))
@@ -141,23 +143,22 @@ namespace webrtc
     }
 
     webrtc::VideoEncoderFactory::CodecSupport UnityVideoEncoderFactory::QueryCodecSupport(
-        const SdpVideoFormat& format, absl::optional<std::string> scalability_mode) const
+        const SdpVideoFormat& format, std::optional<std::string> scalability_mode) const
     {
         VideoEncoderFactory* factory = FindCodecFactory(factories_, format);
         RTC_DCHECK(format.IsCodecInList(factory->GetSupportedFormats()));
         return factory->QueryCodecSupport(format, scalability_mode);
     }
 
-    std::unique_ptr<webrtc::VideoEncoder>
-    UnityVideoEncoderFactory::CreateVideoEncoder(const webrtc::SdpVideoFormat& format)
+    std::unique_ptr<VideoEncoder> UnityVideoEncoderFactory::Create(const Environment& env, const SdpVideoFormat& format)
     {
         VideoEncoderFactory* factory = FindCodecFactory(factories_, format);
-        auto encoder = factory->CreateVideoEncoder(format);
+        auto encoder = factory->Create(env, format);
         if (!profiler_)
             return encoder;
 
         // Use Unity Profiler for measuring encoding process.
         return std::make_unique<UnityVideoEncoder>(std::move(encoder), profiler_);
     }
-}
-}
+} // namespace webrtc
+} // namespace unity

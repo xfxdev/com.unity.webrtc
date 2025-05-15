@@ -46,7 +46,7 @@ namespace Unity.WebRTC.RuntimeTest
             var channel1 = peer.CreateDataChannel("test1", options);
             Assert.AreEqual("test1", channel1.Label);
             Assert.AreEqual("", channel1.Protocol);
-            Assert.NotZero(channel1.MaxRetransmitTime);
+            Assert.Zero(channel1.MaxRetransmitTime);
             Assert.NotZero(channel1.MaxRetransmits);
             Assert.False(channel1.Ordered);
             Assert.False(channel1.Negotiated);

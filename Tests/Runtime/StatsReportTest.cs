@@ -117,7 +117,7 @@ namespace Unity.WebRTC.RuntimeTest
                 case RTCStatsType.InboundRtp:
                     var inboundRtpStreamStats = stats as RTCInboundRTPStreamStats;
                     Assert.NotNull(inboundRtpStreamStats);
-                    Assert.AreEqual(64, inboundRtpStreamStats.Dict.Count);
+                    Assert.AreEqual(70, inboundRtpStreamStats.Dict.Count);
                     Ignore.Pass(inboundRtpStreamStats.ssrc);
                     Assert.IsNotEmpty(inboundRtpStreamStats.kind);
                     Assert.IsNotEmpty(inboundRtpStreamStats.transportId);
@@ -130,12 +130,15 @@ namespace Unity.WebRTC.RuntimeTest
                     Ignore.Pass(inboundRtpStreamStats.remoteId);
                     Ignore.Pass(inboundRtpStreamStats.packetsReceived);
                     Ignore.Pass(inboundRtpStreamStats.packetsDiscarded);
+                    Ignore.Pass(inboundRtpStreamStats.fecSsrc);
                     Ignore.Pass(inboundRtpStreamStats.fecPacketsReceived);
+                    Ignore.Pass(inboundRtpStreamStats.fecBytesReceived);
                     Ignore.Pass(inboundRtpStreamStats.fecPacketsDiscarded);
                     Ignore.Pass(inboundRtpStreamStats.bytesReceived);
                     Ignore.Pass(inboundRtpStreamStats.headerBytesReceived);
                     Ignore.Pass(inboundRtpStreamStats.retransmittedPacketsReceived);
                     Ignore.Pass(inboundRtpStreamStats.retransmittedBytesReceived);
+                    Ignore.Pass(inboundRtpStreamStats.rtxSsrc);
                     Ignore.Pass(inboundRtpStreamStats.lastPacketReceivedTimestamp);
                     Ignore.Pass(inboundRtpStreamStats.jitterBufferDelay);
                     Ignore.Pass(inboundRtpStreamStats.jitterBufferTargetDelay);
@@ -174,6 +177,9 @@ namespace Unity.WebRTC.RuntimeTest
                     Ignore.Pass(inboundRtpStreamStats.pliCount);
                     Ignore.Pass(inboundRtpStreamStats.nackCount);
                     Ignore.Pass(inboundRtpStreamStats.qpSum);
+                    Ignore.Pass(inboundRtpStreamStats.totalCorruptionProbability);
+                    Ignore.Pass(inboundRtpStreamStats.totalSquaredCorruptionProbability);
+                    Ignore.Pass(inboundRtpStreamStats.corruptionMeasurements);
                     Ignore.Pass(inboundRtpStreamStats.googTimingFrameInfo);
                     Ignore.Pass(inboundRtpStreamStats.powerEfficientDecoder);
                     Ignore.Pass(inboundRtpStreamStats.jitterBufferFlushes);
@@ -243,7 +249,7 @@ namespace Unity.WebRTC.RuntimeTest
                 case RTCStatsType.OutboundRtp:
                     var outboundRtpStreamStats = stats as RTCOutboundRTPStreamStats;
                     Assert.NotNull(outboundRtpStreamStats);
-                    Assert.AreEqual(36, outboundRtpStreamStats.Dict.Count);
+                    Assert.AreEqual(38, outboundRtpStreamStats.Dict.Count);
                     Ignore.Pass(outboundRtpStreamStats.ssrc);
                     Assert.IsNotEmpty(outboundRtpStreamStats.kind);
                     Assert.IsNotEmpty(outboundRtpStreamStats.transportId);
@@ -252,6 +258,7 @@ namespace Unity.WebRTC.RuntimeTest
                     Ignore.Pass(outboundRtpStreamStats.remoteId);
                     Ignore.Pass(outboundRtpStreamStats.mid);
                     Ignore.Pass(outboundRtpStreamStats.rid);
+                    Ignore.Pass(outboundRtpStreamStats.encodingIndex);
                     Ignore.Pass(outboundRtpStreamStats.packetsSent);
                     Ignore.Pass(outboundRtpStreamStats.retransmittedPacketsSent);
                     Ignore.Pass(outboundRtpStreamStats.bytesSent);
@@ -280,6 +287,7 @@ namespace Unity.WebRTC.RuntimeTest
                     Ignore.Pass(outboundRtpStreamStats.active);
                     Ignore.Pass(outboundRtpStreamStats.powerEfficientEncoder);
                     Ignore.Pass(outboundRtpStreamStats.scalabilityMode);
+                    Ignore.Pass(outboundRtpStreamStats.rtxSsrc);
                     break;
                 case RTCStatsType.MediaSource:
                     var mediaSourceStats = stats as RTCMediaSourceStats;

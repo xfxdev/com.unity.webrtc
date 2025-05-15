@@ -1,9 +1,9 @@
-#include "pch.h"
+#include "DummyAudioDevice.h"
 
 #include <system_wrappers/include/sleep.h>
 
-#include "DummyAudioDevice.h"
 #include "UnityAudioTrackSource.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -17,12 +17,14 @@ namespace webrtc
 
     int32_t DummyAudioDevice::Init()
     {
-        taskQueue_ = std::make_unique<rtc::TaskQueue>(
-            tackQueueFactory_->CreateTaskQueue("AudioDevice", TaskQueueFactory::Priority::NORMAL));
-        task_ = RepeatingTaskHandle::Start(taskQueue_->Get(), [this]() {
-            ProcessAudio();
-            return TimeDelta::Millis(kFrameLengthMs);
-        });
+        taskQueue_ = tackQueueFactory_->CreateTaskQueue("AudioDevice", TaskQueueFactory::Priority::NORMAL);
+        task_ = RepeatingTaskHandle::Start(
+            taskQueue_.get(),
+            [this]()
+            {
+                ProcessAudio();
+                return TimeDelta::Millis(kFrameLengthMs);
+            });
         initialized_ = true;
         return 0;
     }

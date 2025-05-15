@@ -6,7 +6,6 @@
 #include <api/media_stream_interface.h>
 #include <api/task_queue/task_queue_factory.h>
 #include <media/base/adapted_video_track_source.h>
-#include <rtc_base/task_queue.h>
 
 #include "VideoFrame.h"
 
@@ -37,13 +36,13 @@ namespace webrtc
         };
 
         UnityVideoTrackSource(
-            bool is_screencast, absl::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory);
+            bool is_screencast, std::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory);
         ~UnityVideoTrackSource() override;
         SourceState state() const override;
 
         bool remote() const override;
         bool is_screencast() const override;
-        absl::optional<bool> needs_denoising() const override;
+        std::optional<bool> needs_denoising() const override;
         bool syncApplicationFramerate() const { return syncApplicationFramerate_; };
         void OnFrameCaptured(rtc::scoped_refptr<VideoFrame> frame);
         void SetSyncApplicationFramerate(bool value);
@@ -51,7 +50,7 @@ namespace webrtc
         using VideoTrackSourceInterface::RemoveSink;
 
         static rtc::scoped_refptr<UnityVideoTrackSource>
-        Create(bool is_screencast, absl::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory);
+        Create(bool is_screencast, std::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory);
 
     private:
         void OnUpdateVideoFrame();
@@ -75,10 +74,11 @@ namespace webrtc
         rtc::TimestampAligner timestamp_aligner_;
 
         const bool is_screencast_;
-        const absl::optional<bool> needs_denoising_;
+        const std::optional<bool> needs_denoising_;
         std::mutex mutex_;
 
-        std::unique_ptr<rtc::TaskQueue> taskQueue_;
+        std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter> taskQueue_;
+
         std::unique_ptr<VideoFrameScheduler> scheduler_;
         rtc::scoped_refptr<unity::webrtc::VideoFrame> frame_;
         bool syncApplicationFramerate_;

@@ -1,16 +1,16 @@
-#include "pch.h"
+#include "NvCodec.h"
 
 #include <absl/strings/match.h>
 #include <api/video_codecs/video_encoder_factory.h>
 #include <modules/video_coding/codecs/h264/include/h264.h>
 
 #include "Codec/CreateVideoCodecFactory.h"
-#include "NvCodec.h"
 #include "NvDecoder/NvDecoder.h"
 #include "NvDecoderImpl.h"
 #include "NvEncoder/NvEncoderCuda.h"
 #include "NvEncoderImpl.h"
 #include "ProfilerMarkerFactory.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -75,7 +75,7 @@ namespace webrtc
         std::vector<H264Profile> supportedProfiles;
         for (auto& guid : profileGUIDs)
         {
-            absl::optional<H264Profile> profile = GuidToProfile(guid);
+            std::optional<H264Profile> profile = GuidToProfile(guid);
             if (profile.has_value())
                 supportedProfiles.push_back(profile.value());
         }
@@ -238,5 +238,5 @@ namespace webrtc
     {
         return NvDecoder::Create(cricket::CreateVideoCodec(format), context_, profiler_);
     }
-}
-}
+} // namespace webrtc
+} // namespace unity

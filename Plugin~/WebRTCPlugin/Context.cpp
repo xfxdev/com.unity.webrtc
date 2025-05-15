@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "Context.h"
 
 #include <api/create_peerconnection_factory.h>
 #include <api/task_queue/default_task_queue_factory.h>
@@ -6,18 +6,20 @@
 #include <rtc_base/strings/json.h>
 
 #include "AudioTrackSinkAdapter.h"
-#include "Context.h"
 #include "EncodedStreamTransformer.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "MediaStreamObserver.h"
+#include "RTCStatsWrapper.h"
 #include "UnityAudioDecoderFactory.h"
 #include "UnityAudioEncoderFactory.h"
 #include "UnityAudioTrackSource.h"
 #include "UnityVideoDecoderFactory.h"
 #include "UnityVideoEncoderFactory.h"
 #include "UnityVideoTrackSource.h"
+#include "Utils.h"
 #include "WebRTCPlugin.h"
+#include "pch.h"
 
 #if CUDA_PLATFORM
 #include "Logger.h"
@@ -274,40 +276,6 @@ namespace webrtc
         m_listStatsReport.push_back(report);
     }
 
-    const RTCStats** Context::GetStatsList(const RTCStatsReport* report, size_t* length, uint32_t** types)
-    {
-        std::lock_guard<std::mutex> lock(mutexStatsReport);
-
-        auto result = std::find_if(
-            m_listStatsReport.begin(),
-            m_listStatsReport.end(),
-            [report](rtc::scoped_refptr<const webrtc::RTCStatsReport> it) { return it.get() == report; });
-
-        if (result == m_listStatsReport.end())
-        {
-            RTC_LOG(LS_INFO) << "Calling GetStatsList is failed. The reference of RTCStatsReport is not found.";
-            return nullptr;
-        }
-
-        const size_t size = report->size();
-        *length = size;
-        *types = static_cast<uint32_t*>(CoTaskMemAlloc(sizeof(uint32_t) * size));
-        void* buf = CoTaskMemAlloc(sizeof(RTCStats*) * size);
-        const RTCStats** ret = static_cast<const RTCStats**>(buf);
-        if (size == 0)
-        {
-            return ret;
-        }
-        int i = 0;
-        for (const auto& stats : *report)
-        {
-            ret[i] = &stats;
-            (*types)[i] = statsTypes.at(stats.type());
-            i++;
-        }
-        return ret;
-    }
-
     void Context::DeleteStatsReport(const webrtc::RTCStatsReport* report)
     {
         std::lock_guard<std::mutex> lock(mutexStatsReport);
@@ -396,14 +364,74 @@ namespace webrtc
         renderer = nullptr;
     }
 
-    void Context::GetRtpSenderCapabilities(cricket::MediaType kind, RtpCapabilities* capabilities) const
+    void Context::GetRtpSenderCapabilities(webrtc::MediaType kind, RtpCapabilities* capabilities) const
     {
         *capabilities = m_peerConnectionFactory->GetRtpSenderCapabilities(kind);
     }
 
-    void Context::GetRtpReceiverCapabilities(cricket::MediaType kind, RtpCapabilities* capabilities) const
+    void Context::GetRtpReceiverCapabilities(webrtc::MediaType kind, RtpCapabilities* capabilities) const
     {
         *capabilities = m_peerConnectionFactory->GetRtpReceiverCapabilities(kind);
+    }
+
+    const void** Context::GetStatsList(const RTCStatsReport* report, size_t* length, uint32_t** types)
+    {
+        std::lock_guard<std::mutex> lock(mutexStatsReport);
+
+        auto result = std::find_if(
+            m_listStatsReport.begin(),
+            m_listStatsReport.end(),
+            [report](rtc::scoped_refptr<const webrtc::RTCStatsReport> it) { return it.get() == report; });
+
+        if (result == m_listStatsReport.end())
+        {
+            RTC_LOG(LS_INFO) << "Calling GetStatsList is failed. The reference of RTCStatsReport is not found.";
+            return nullptr;
+        }
+
+        const size_t size = report->size();
+        *length = size;
+        *types = static_cast<uint32_t*>(CoTaskMemAlloc(sizeof(uint32_t) * size));
+        void* buf = CoTaskMemAlloc(sizeof(void*) * size);
+        const void** ret = static_cast<const void**>(buf);
+        if (size == 0)
+        {
+            return ret;
+        }
+        int i = 0;
+        RTCStatsType type = RTCStatsType::Unknown;
+        for (const auto& stats : *report)
+        {
+            type = RTCStatsWrapperFactory::MapRTCStatsType(&stats);
+            if (RTCStatsType::Unknown == type)
+            {
+                DebugError("GetStatsList: unknown RTCStats type '%s'", stats.type());
+                continue;
+            }
+            (*types)[i] = type;
+            ret[i] = RTCStatsWrapperFactory::Wrap(&stats);
+            if (ret[i] == nullptr)
+            {
+                DebugError("GetStatsList: failed to wrap RTCStats of type '%s'", stats.type());
+                continue;
+            }
+            i++;
+        }
+        *length = i;
+        return ret;
+    }
+    const char* Context::StatsToJson(const char* statsID)
+    {
+        std::lock_guard<std::mutex> lock(mutexStatsReport);
+        for (const auto& report : m_listStatsReport)
+        {
+            auto stats = report->Get(statsID);
+            if (stats != nullptr)
+            {
+                return Utils::ConvertString(stats->ToJson());
+            }
+        }
+        return nullptr;
     }
 
 } // end namespace webrtc

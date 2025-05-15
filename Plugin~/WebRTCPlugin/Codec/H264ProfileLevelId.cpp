@@ -1,8 +1,8 @@
-#include "pch.h"
+#include "H264ProfileLevelId.h"
 
 #include <rtc_base/arraysize.h>
 
-#include "H264ProfileLevelId.h"
+#include "pch.h"
 
 using namespace ::webrtc;
 
@@ -41,7 +41,7 @@ namespace webrtc
     static const int kPixelsPerMacroblock = 16 * 16;
     static const int kUnitMaxBRWithNAL = 1200;
 
-    absl::optional<webrtc::H264Level> H264SupportedLevel(int maxFramePixelCount, int maxFramerate, int maxBitrate)
+    std::optional<webrtc::H264Level> H264SupportedLevel(int maxFramePixelCount, int maxFramerate, int maxBitrate)
     {
         if (maxFramePixelCount <= 0 || maxFramerate <= 0 || maxBitrate <= 0)
             return absl::nullopt;
@@ -76,5 +76,5 @@ namespace webrtc
         // target level not found.
         return 0;
     }
-}
-}
+} // namespace webrtc
+} // namespace unity

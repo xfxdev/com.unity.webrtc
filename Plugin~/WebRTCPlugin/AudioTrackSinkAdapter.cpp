@@ -1,9 +1,9 @@
-#include "pch.h"
+#include "AudioTrackSinkAdapter.h"
 
 #include <audio/remix_resample.h>
 #include <common_audio/include/audio_util.h>
 
-#include "AudioTrackSinkAdapter.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -34,13 +34,18 @@ namespace webrtc
         // the `number_of_channels` argument is passed as `1`. However, Unity expects
         // to receive audio which is stereo channel usually, in this case we need to
         // resample audio monoural to stereo.
-        webrtc::voe::RemixAndResample(
-            static_cast<const int16_t*>(audio_data),
-            number_of_frames,
-            number_of_channels,
-            sample_rate,
-            &_resampler,
-            &_frame);
+        // webrtc::voe::RemixAndResample(
+        //     static_cast<const int16_t*>(audio_data),
+        //     number_of_frames,
+        //     number_of_channels,
+        //     sample_rate,
+        //     &_resampler,
+        //     &_frame);
+
+        InterleavedView<const int16_t> source(
+            static_cast<const int16_t*>(audio_data), number_of_frames, number_of_channels);
+
+        webrtc::voe::RemixAndResample(source, sample_rate, &_resampler, &_frame);
 
         size_t length = _frame.num_channels() * _frame.samples_per_channel();
 
@@ -60,7 +65,8 @@ namespace webrtc
 
         // reset audio frame.
         _frame.num_channels_ = channels;
-        _frame.sample_rate_hz_ = sampleRate;
+        // _frame.sample_rate_hz_ = sampleRate;
+        _frame.SetSampleRateAndChannelSize(sampleRate);
 
         // reallocate temporary buffer.
         _bufferIn.resize(length);

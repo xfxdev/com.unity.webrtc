@@ -1,9 +1,10 @@
-#include "pch.h"
+#include "VideoFrameScheduler.h"
 
 #include <functional>
+
 #include <rtc_base/event.h>
 
-#include "VideoFrameScheduler.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -24,10 +25,12 @@ namespace webrtc
         rtc::Event done;
 
         // Waiting for stopping task.
-        queue_->PostTask([task = std::move(task_), &done]() mutable {
-            task.Stop();
-            done.Set();
-        });
+        queue_->PostTask(
+            [task = std::move(task_), &done]() mutable
+            {
+                task.Stop();
+                done.Set();
+            });
         done.Wait(kTimeout);
     }
 
@@ -51,21 +54,21 @@ namespace webrtc
 
     void VideoFrameScheduler::SetMaxFramerateFps(int maxFramerate) { maxFramerate_ = maxFramerate; }
 
-    absl::optional<TimeDelta> VideoFrameScheduler::ScheduleNextFrame()
+    std::optional<TimeDelta> VideoFrameScheduler::ScheduleNextFrame()
     {
         if (paused_)
         {
-            return absl::nullopt;
+            return std::nullopt;
         }
 
         if (!callback_)
         {
-            return absl::nullopt;
+            return std::nullopt;
         }
 
         if (maxFramerate_ == 0)
         {
-            return absl::nullopt;
+            return std::nullopt;
         }
 
         Timestamp now = clock_->CurrentTime();
@@ -88,18 +91,22 @@ namespace webrtc
         auto firstDelay = ScheduleNextFrame();
         RTC_DCHECK(firstDelay);
 
-        task_ = RepeatingTaskHandle::DelayedStart(queue_, firstDelay.value(), [this]() {
-            if (paused_)
+        task_ = RepeatingTaskHandle::DelayedStart(
+            queue_,
+            firstDelay.value(),
+            [this]()
             {
-                task_.Stop();
+                if (paused_)
+                {
+                    task_.Stop();
+                    return TimeDelta::PlusInfinity();
+                }
+                CaptureNextFrame();
+                auto delay = ScheduleNextFrame();
+                if (delay.has_value())
+                    return delay.value();
                 return TimeDelta::PlusInfinity();
-            }
-            CaptureNextFrame();
-            auto delay = ScheduleNextFrame();
-            if (delay.has_value())
-                return delay.value();
-            return TimeDelta::PlusInfinity();
-        });
+            });
     }
-}
-}
+} // namespace webrtc
+} // namespace unity

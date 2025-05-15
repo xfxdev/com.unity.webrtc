@@ -1026,7 +1026,7 @@ namespace Unity.WebRTC
         ///         {
         ///             RTCSetSessionDescriptionAsyncOperation asyncOperation = peerConnection.SetLocalDescription(ref description);
         ///             yield return asyncOperation;
-        ///             
+        ///
         ///             if (asyncOperation.IsError)
         ///             {
         ///                 Debug.LogError("Failed to set local description: " + asyncOperation.Error.message);
@@ -1159,10 +1159,13 @@ namespace Unity.WebRTC
         {
             get
             {
-                RTCSessionDescription desc = default;
-                if (NativeMethods.PeerConnectionGetLocalDescription(GetSelfOrThrow(), ref desc))
+                if (NativeMethods.PeerConnectionGetLocalDescription(GetSelfOrThrow(), out RTCSdpType type, out IntPtr sdp))
                 {
-                    return desc;
+                    return new RTCSessionDescription
+                    {
+                        type = type,
+                        sdp = sdp.AsAnsiStringWithFreeMem(),
+                    };
                 }
                 throw new InvalidOperationException("LocalDescription is not exist");
             }
@@ -1175,10 +1178,13 @@ namespace Unity.WebRTC
         {
             get
             {
-                RTCSessionDescription desc = default;
-                if (NativeMethods.PeerConnectionGetRemoteDescription(GetSelfOrThrow(), ref desc))
+                if (NativeMethods.PeerConnectionGetRemoteDescription(GetSelfOrThrow(), out RTCSdpType type, out IntPtr sdp))
                 {
-                    return desc;
+                    return new RTCSessionDescription
+                    {
+                        type = type,
+                        sdp = sdp.AsAnsiStringWithFreeMem(),
+                    };
                 }
                 throw new InvalidOperationException("RemoteDescription is not exist");
             }
@@ -1192,10 +1198,13 @@ namespace Unity.WebRTC
         {
             get
             {
-                RTCSessionDescription desc = default;
-                if (NativeMethods.PeerConnectionGetCurrentLocalDescription(GetSelfOrThrow(), ref desc))
+                if (NativeMethods.PeerConnectionGetCurrentLocalDescription(GetSelfOrThrow(), out RTCSdpType type, out IntPtr sdp))
                 {
-                    return desc;
+                    return new RTCSessionDescription
+                    {
+                        type = type,
+                        sdp = sdp.AsAnsiStringWithFreeMem(),
+                    };
                 }
                 throw new InvalidOperationException("CurrentLocalDescription is not exist");
             }
@@ -1209,10 +1218,13 @@ namespace Unity.WebRTC
         {
             get
             {
-                RTCSessionDescription desc = default;
-                if (NativeMethods.PeerConnectionGetCurrentRemoteDescription(GetSelfOrThrow(), ref desc))
+                if (NativeMethods.PeerConnectionGetCurrentRemoteDescription(GetSelfOrThrow(), out RTCSdpType type, out IntPtr sdp))
                 {
-                    return desc;
+                    return new RTCSessionDescription
+                    {
+                        type = type,
+                        sdp = sdp.AsAnsiStringWithFreeMem(),
+                    };
                 }
                 throw new InvalidOperationException("CurrentRemoteDescription is not exist");
             }
@@ -1225,10 +1237,13 @@ namespace Unity.WebRTC
         {
             get
             {
-                RTCSessionDescription desc = default;
-                if (NativeMethods.PeerConnectionGetPendingLocalDescription(GetSelfOrThrow(), ref desc))
+                if (NativeMethods.PeerConnectionGetPendingLocalDescription(GetSelfOrThrow(), out RTCSdpType type, out IntPtr sdp))
                 {
-                    return desc;
+                    return new RTCSessionDescription
+                    {
+                        type = type,
+                        sdp = sdp.AsAnsiStringWithFreeMem(),
+                    };
                 }
                 throw new InvalidOperationException("PendingLocalDescription is not exist");
             }
@@ -1241,10 +1256,13 @@ namespace Unity.WebRTC
         {
             get
             {
-                RTCSessionDescription desc = default;
-                if (NativeMethods.PeerConnectionGetPendingRemoteDescription(GetSelfOrThrow(), ref desc))
+                if (NativeMethods.PeerConnectionGetPendingRemoteDescription(GetSelfOrThrow(), out RTCSdpType type, out IntPtr sdp))
                 {
-                    return desc;
+                    return new RTCSessionDescription
+                    {
+                        type = type,
+                        sdp = sdp.AsAnsiStringWithFreeMem(),
+                    };
                 }
                 throw new InvalidOperationException("PendingRemoteDescription is not exist");
             }

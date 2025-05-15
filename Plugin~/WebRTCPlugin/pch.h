@@ -37,20 +37,19 @@
 #endif
 
 #if SUPPORT_D3D11 && SUPPORT_D3D12
+#include <IUnityGraphicsD3D11.h>
+#include <IUnityGraphicsD3D12.h>
 #include <comdef.h>
+#include <cudaD3D11.h>
 #include <d3d11.h>
 #include <d3d11_4.h>
 #include <d3d12.h>
-#include <wrl/client.h>
 
-#include <IUnityGraphicsD3D11.h>
-#include <IUnityGraphicsD3D12.h>
-#include <cudaD3D11.h>
+#include <wrl/client.h>
 #endif
 
 #if SUPPORT_OPENGL_CORE
 #include <X11/Xlib.h>
-
 #include <glad/gl.h>
 #include <glad/glx.h>
 #undef CurrentTime // Defined by X11/X.h
@@ -67,16 +66,10 @@
 #include <GLES3/gl3ext.h>
 #endif
 
-#if SUPPORT_METAL
-#import <Metal/Metal.h>
-
-#include <IUnityGraphicsMetal.h>
-#endif
-
 #if SUPPORT_VULKAN
-#include <vulkan/vulkan.h>
-
 #include <IUnityGraphicsVulkan.h>
+
+#include <vulkan/vulkan.h>
 
 #include "GraphicsDevice/Vulkan/LoadVulkanFunctions.h"
 
@@ -117,6 +110,15 @@ namespace webrtc
 #define CoTaskMemAlloc(p) malloc(p)
 #define CoTaskMemFree(p) free(p)
 #endif
+
+    // clang-format off
+#define SAFE_COTASKMEMFREE(p)       \
+    if ((p) != nullptr)             \
+    {                               \
+        CoTaskMemFree((void*)(p));  \
+        (p) = nullptr;              \
+    }
+    // clang-format on
 
     using byte = unsigned char;
     using uint8 = unsigned char;

@@ -15,26 +15,6 @@ namespace webrtc
 {
     using namespace ::webrtc;
 
-    const std::map<std::string, uint32_t> statsTypes = {
-        { "codec", 0 },
-        { "inbound-rtp", 1 },
-        { "outbound-rtp", 2 },
-        { "remote-inbound-rtp", 3 },
-        { "remote-outbound-rtp", 4 },
-        { "media-source", 5 },
-        { "media-playout", 6 },
-        { "peer-connection", 7 },
-        { "data-channel", 8 },
-        { "transport", 9 },
-        { "candidate-pair", 10 },
-        { "local-candidate", 11 },
-        { "remote-candidate", 12 },
-        { "certificate", 13 },
-        // todo: If the following types are deleted from rtcstats_objects.h, delete them as well.
-        { "stream", 21 },
-        { "track", 22 }
-    };
-
     class IGraphicsDevice;
     class ProfilerMarkerFactory;
     struct ContextDependencies
@@ -72,7 +52,7 @@ namespace webrtc
         explicit Context(ContextDependencies& dependencies);
         ~Context();
 
-        bool ExistsRefPtr(const rtc::RefCountInterface* ptr) const
+        bool ExistsRefPtr(const webrtc::RefCountInterface* ptr) const
         {
             return m_mapRefPtr.find(ptr) != m_mapRefPtr.end();
         }
@@ -81,7 +61,7 @@ namespace webrtc
         {
             m_mapRefPtr.emplace(refptr.get(), refptr);
         }
-        void AddRefPtr(rtc::RefCountInterface* ptr) { m_mapRefPtr.emplace(ptr, ptr); }
+        void AddRefPtr(webrtc::RefCountInterface* ptr) { m_mapRefPtr.emplace(ptr, ptr); }
 
         template<typename T>
         void RemoveRefPtr(rtc::scoped_refptr<T>& refptr)
@@ -125,7 +105,8 @@ namespace webrtc
         // StatsReport
         std::mutex mutexStatsReport;
         void AddStatsReport(const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report);
-        const RTCStats** GetStatsList(const RTCStatsReport* report, size_t* length, uint32_t** types);
+        const void** GetStatsList(const RTCStatsReport* report, size_t* length, uint32_t** types);
+        const char* StatsToJson(const char* statsID);
         void DeleteStatsReport(const webrtc::RTCStatsReport* report);
 
         // DataChannel
@@ -141,10 +122,10 @@ namespace webrtc
         void DeleteVideoRenderer(UnityVideoRenderer* renderer);
 
         // RtpSender
-        void GetRtpSenderCapabilities(cricket::MediaType kind, RtpCapabilities* capabilities) const;
+        void GetRtpSenderCapabilities(webrtc::MediaType kind, RtpCapabilities* capabilities) const;
 
         // RtpReceiver
-        void GetRtpReceiverCapabilities(cricket::MediaType kind, RtpCapabilities* capabilities) const;
+        void GetRtpReceiverCapabilities(webrtc::MediaType kind, RtpCapabilities* capabilities) const;
 
         // AudioDevice
         rtc::scoped_refptr<DummyAudioDevice> GetAudioDevice() const { return m_audioDevice; }
@@ -164,7 +145,7 @@ namespace webrtc
         std::map<const DataChannelInterface*, std::unique_ptr<DataChannelObject>> m_mapDataChannels;
         std::map<const uint32_t, std::shared_ptr<UnityVideoRenderer>> m_mapVideoRenderer;
         std::map<const AudioTrackSinkAdapter*, std::unique_ptr<AudioTrackSinkAdapter>> m_mapAudioTrackAndSink;
-        std::map<const rtc::RefCountInterface*, rtc::scoped_refptr<rtc::RefCountInterface>> m_mapRefPtr;
+        std::map<const webrtc::RefCountInterface*, rtc::scoped_refptr<webrtc::RefCountInterface>> m_mapRefPtr;
 
         static uint32_t s_rendererId;
         static uint32_t GenerateRendererId();

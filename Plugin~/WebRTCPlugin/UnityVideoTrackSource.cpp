@@ -1,8 +1,8 @@
-#include "pch.h"
-
 #include "UnityVideoTrackSource.h"
+
 #include "VideoFrameAdapter.h"
 #include "VideoFrameScheduler.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -10,21 +10,20 @@ namespace webrtc
 {
 
     rtc::scoped_refptr<UnityVideoTrackSource> UnityVideoTrackSource::Create(
-        bool is_screencast, absl::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory)
+        bool is_screencast, std::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory)
     {
         return rtc::make_ref_counted<UnityVideoTrackSource>(is_screencast, needs_denoising, taskQueueFactory);
     }
 
     UnityVideoTrackSource::UnityVideoTrackSource(
-        bool is_screencast, absl::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory)
+        bool is_screencast, std::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory)
         : AdaptedVideoTrackSource(/*required_alignment=*/1)
         , is_screencast_(is_screencast)
         , frame_(nullptr)
         , syncApplicationFramerate_(true)
     {
-        taskQueue_ = std::make_unique<rtc::TaskQueue>(
-            taskQueueFactory->CreateTaskQueue("VideoFrameScheduler", TaskQueueFactory::Priority::NORMAL));
-        scheduler_ = std::make_unique<VideoFrameScheduler>(taskQueue_->Get());
+        taskQueue_ = taskQueueFactory->CreateTaskQueue("VideoFrameScheduler", TaskQueueFactory::Priority::NORMAL);
+        scheduler_ = std::make_unique<VideoFrameScheduler>(taskQueue_.get());
         scheduler_->Start(std::bind(&UnityVideoTrackSource::OnUpdateVideoFrame, this));
         if (syncApplicationFramerate_)
             scheduler_->Pause(true);
@@ -55,7 +54,7 @@ namespace webrtc
 
     bool UnityVideoTrackSource::is_screencast() const { return is_screencast_; }
 
-    absl::optional<bool> UnityVideoTrackSource::needs_denoising() const { return needs_denoising_; }
+    std::optional<bool> UnityVideoTrackSource::needs_denoising() const { return needs_denoising_; }
 
     void UnityVideoTrackSource::OnUpdateVideoFrame()
     {

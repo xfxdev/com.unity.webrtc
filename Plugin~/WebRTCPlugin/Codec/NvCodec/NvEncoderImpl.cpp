@@ -41,7 +41,7 @@ namespace webrtc
 
     inline bool operator!=(const CUDA_ARRAY_DESCRIPTOR& lhs, const CUDA_ARRAY_DESCRIPTOR& rhs) { return !(lhs == rhs); }
 
-    inline absl::optional<webrtc::H264Level> NvEncSupportedLevel(std::vector<SdpVideoFormat>& formats, const GUID& guid)
+    inline std::optional<webrtc::H264Level> NvEncSupportedLevel(std::vector<SdpVideoFormat>& formats, const GUID& guid)
     {
         for (const auto& format : formats)
         {
@@ -57,7 +57,7 @@ namespace webrtc
         return absl::nullopt;
     }
 
-    inline absl::optional<NV_ENC_LEVEL>
+    inline std::optional<NV_ENC_LEVEL>
     NvEncRequiredLevel(const VideoCodec& codec, std::vector<SdpVideoFormat>& formats, const GUID& guid)
     {
         int pixelCount = codec.width * codec.height;
@@ -84,7 +84,7 @@ namespace webrtc
         return static_cast<NV_ENC_LEVEL>(requiredLevel.value());
     }
 
-    absl::optional<H264Level> NvEncoderImpl::s_maxSupportedH264Level;
+    std::optional<H264Level> NvEncoderImpl::s_maxSupportedH264Level;
     std::vector<SdpVideoFormat> NvEncoderImpl::s_formats;
 
 #if SUPPORT_CUDA_KERNEL

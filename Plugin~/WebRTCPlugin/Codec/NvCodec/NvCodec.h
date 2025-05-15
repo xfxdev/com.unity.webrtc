@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cuda.h>
 #include <vector>
+
+#include <cuda.h>
 
 #include <api/video_codecs/h264_profile_level_id.h>
 #include <api/video_codecs/sdp_video_format.h>
@@ -89,7 +90,7 @@ namespace webrtc
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-function"
 
-    static absl::optional<H264Profile> GuidToProfile(GUID& guid)
+    static std::optional<H264Profile> GuidToProfile(GUID& guid)
     {
         if (guid == NV_ENC_H264_PROFILE_BASELINE_GUID)
             return H264Profile::kProfileBaseline;
@@ -102,7 +103,7 @@ namespace webrtc
         return absl::nullopt;
     }
 
-    static absl::optional<GUID> ProfileToGuid(H264Profile profile)
+    static std::optional<GUID> ProfileToGuid(H264Profile profile)
     {
         if (profile == H264Profile::kProfileBaseline)
             return NV_ENC_H264_PROFILE_BASELINE_GUID;
@@ -119,5 +120,5 @@ namespace webrtc
         return absl::nullopt;
     }
 #pragma clang diagnostic pop
-}
-}
+} // namespace webrtc
+} // namespace unity

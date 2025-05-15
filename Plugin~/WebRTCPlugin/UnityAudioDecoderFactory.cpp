@@ -1,14 +1,13 @@
-#include "pch.h"
+#include "UnityAudioDecoderFactory.h"
 
 #include <api/audio_codecs/L16/audio_decoder_L16.h>
 #include <api/audio_codecs/audio_decoder_factory_template.h>
 #include <api/audio_codecs/g711/audio_decoder_g711.h>
 #include <api/audio_codecs/g722/audio_decoder_g722.h>
-#include <api/audio_codecs/ilbc/audio_decoder_ilbc.h>
 #include <api/audio_codecs/opus/audio_decoder_multi_channel_opus.h>
 #include <api/audio_codecs/opus/audio_decoder_opus.h>
 
-#include "UnityAudioDecoderFactory.h"
+#include "pch.h"
 
 using namespace ::webrtc;
 
@@ -21,7 +20,7 @@ namespace webrtc
     struct StereoSupportDecoder
     {
         using Config = typename T::Config;
-        static absl::optional<Config> SdpToConfig(const SdpAudioFormat& audio_format)
+        static std::optional<Config> SdpToConfig(const SdpAudioFormat& audio_format)
         {
             return T::SdpToConfig(audio_format);
         }
@@ -43,10 +42,11 @@ namespace webrtc
             }
             specs->push_back(spec);
         }
+
         static std::unique_ptr<AudioDecoder>
-        MakeAudioDecoder(const Config& config, absl::optional<AudioCodecPairId> codec_pair_id)
+        MakeAudioDecoder(const Environment& env, const Config& config, std::optional<AudioCodecPairId> codec_pair_id)
         {
-            return T::MakeAudioDecoder(config, codec_pair_id);
+            return T::MakeAudioDecoder(env, config, codec_pair_id);
         }
     };
 
@@ -55,7 +55,6 @@ namespace webrtc
         return ::webrtc::CreateAudioDecoderFactory<
             StereoSupportDecoder<AudioDecoderOpus>,
             AudioDecoderMultiChannelOpus,
-            AudioDecoderIlbc,
             AudioDecoderG722,
             AudioDecoderG711,
             AudioDecoderL16>();

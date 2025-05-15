@@ -1,10 +1,16 @@
 #pragma once
 
-#include <api/frame_transformer_interface.h>
-#include <api/media_stream_interface.h>
 #include <api/rtc_error.h>
 
 struct IUnityInterfaces;
+
+namespace webrtc
+{
+class FrameTransformerInterface;
+class TransformableFrameInterface;
+class MediaStreamInterface;
+class MediaStreamTrackInterface;
+}
 
 namespace unity
 {

@@ -716,7 +716,7 @@ namespace Unity.WebRTC
     };
 
     /// <summary>
-    ///     Provides utilities and management functions for integrating WebRTC functionality. 
+    ///     Provides utilities and management functions for integrating WebRTC functionality.
     /// </summary>
     /// <remarks>
     ///     `WebRTC` class provides a set of static methods and properties to manage the WebRTC functionality.
@@ -1465,6 +1465,8 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void ContextDeleteStatsReport(IntPtr context, IntPtr report);
         [DllImport(WebRTC.Lib)]
+        public static extern IntPtr ContextStatsToJson(IntPtr context, [MarshalAs(UnmanagedType.LPStr)] string statsID);
+        [DllImport(WebRTC.Lib)]
         public static extern void ContextAddRefPtr(IntPtr context, IntPtr ptr);
         [DllImport(WebRTC.Lib)]
         public static extern void ContextDeleteRefPtr(IntPtr context, IntPtr ptr);
@@ -1513,24 +1515,42 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
         public static extern bool PeerConnectionCanTrickleIceCandidates(IntPtr ptr, [MarshalAs(UnmanagedType.U1)] out bool value);
+        // [DllImport(WebRTC.Lib)]
+        // [return: MarshalAs(UnmanagedType.U1)]
+        // public static extern bool PeerConnectionGetLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        // [DllImport(WebRTC.Lib)]
+        // [return: MarshalAs(UnmanagedType.U1)]
+        // public static extern bool PeerConnectionGetRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        // [DllImport(WebRTC.Lib)]
+        // [return: MarshalAs(UnmanagedType.U1)]
+        // public static extern bool PeerConnectionGetPendingLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        // [DllImport(WebRTC.Lib)]
+        // [return: MarshalAs(UnmanagedType.U1)]
+        // public static extern bool PeerConnectionGetPendingRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        // [DllImport(WebRTC.Lib)]
+        // [return: MarshalAs(UnmanagedType.U1)]
+        // public static extern bool PeerConnectionGetCurrentLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        // [DllImport(WebRTC.Lib)]
+        // [return: MarshalAs(UnmanagedType.U1)]
+        // public static extern bool PeerConnectionGetCurrentRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool PeerConnectionGetLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        public static extern bool PeerConnectionGetLocalDescription(IntPtr ptr, out RTCSdpType type, out IntPtr sdp);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool PeerConnectionGetRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        public static extern bool PeerConnectionGetRemoteDescription(IntPtr ptr, out RTCSdpType type, out IntPtr sdp);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool PeerConnectionGetPendingLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        public static extern bool PeerConnectionGetPendingLocalDescription(IntPtr ptr, out RTCSdpType type, out IntPtr sdp);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool PeerConnectionGetPendingRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        public static extern bool PeerConnectionGetPendingRemoteDescription(IntPtr ptr, out RTCSdpType type, out IntPtr sdp);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool PeerConnectionGetCurrentLocalDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        public static extern bool PeerConnectionGetCurrentLocalDescription(IntPtr ptr, out RTCSdpType type, out IntPtr sdp);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool PeerConnectionGetCurrentRemoteDescription(IntPtr ptr, ref RTCSessionDescription desc);
+        public static extern bool PeerConnectionGetCurrentRemoteDescription(IntPtr ptr, out RTCSdpType type, out IntPtr sdp);
         [DllImport(WebRTC.Lib)]
         public static extern RTCErrorType PeerConnectionAddTrack(IntPtr pc, IntPtr track, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string streamId, out IntPtr sender);
         [DllImport(WebRTC.Lib)]
@@ -1725,55 +1745,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void VideoSourceSetSyncApplicationFramerate(IntPtr source, [MarshalAs(UnmanagedType.U1)] bool value);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsGetJson(IntPtr stats);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsGetId(IntPtr stats);
-        [DllImport(WebRTC.Lib)]
-        public static extern RTCStatsType StatsGetType(IntPtr stats);
-        [DllImport(WebRTC.Lib)]
-        public static extern long StatsGetTimestamp(IntPtr stats);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsGetMembers(IntPtr stats, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetName(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern StatsMemberType StatsMemberGetType(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool StatsMemberIsDefined(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        public static extern bool StatsMemberGetBool(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern int StatsMemberGetInt(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern uint StatsMemberGetUnsignedInt(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern long StatsMemberGetLong(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern ulong StatsMemberGetUnsignedLong(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern double StatsMemberGetDouble(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetString(IntPtr member);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetBoolArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetIntArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetUnsignedIntArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetLongArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetUnsignedLongArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetDoubleArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetStringArray(IntPtr member, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetMapStringUint64(IntPtr member, out IntPtr values, out ulong length);
-        [DllImport(WebRTC.Lib)]
-        public static extern IntPtr StatsMemberGetMapStringDouble(IntPtr member, out IntPtr values, out ulong length);
+        public static extern void ReleaseStats(IntPtr stats, int type);
         [DllImport(WebRTC.Lib)]
         public static extern uint FrameGetTimestamp(IntPtr frame);
         [DllImport(WebRTC.Lib)]

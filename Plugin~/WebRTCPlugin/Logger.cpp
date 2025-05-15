@@ -1,8 +1,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-nonliteral"
-#include "pch.h"
-
 #include "WebRTCPlugin.h"
+#include "pch.h"
 
 #if _DEBUG
 #include <cstdarg>
@@ -31,7 +30,7 @@ namespace webrtc
 #if _WIN32
         vsprintf_s(buf, fmt, vl);
 #else
-        vsprintf(buf, fmt, vl);
+        vsnprintf(buf, sizeof(buf), fmt, vl);
 #endif
         debugLog(severity, buf);
         va_end(vl);

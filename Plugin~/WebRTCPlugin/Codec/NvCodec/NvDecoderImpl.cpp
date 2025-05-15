@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "NvDecoderImpl.h"
 
 #include <api/video/i420_buffer.h>
 #include <api/video/video_codec_type.h>
@@ -7,9 +7,9 @@
 
 #include "NvCodecUtils.h"
 #include "NvDecoder/NvDecoder.h"
-#include "NvDecoderImpl.h"
 #include "ProfilerMarkerFactory.h"
 #include "ScopedProfiler.h"
+#include "pch.h"
 
 namespace unity
 {
@@ -120,8 +120,8 @@ namespace webrtc
         }
 
         m_h264_bitstream_parser.ParseBitstream(input_image);
-        absl::optional<int> qp = m_h264_bitstream_parser.GetLastSliceQp();
-        absl::optional<SpsParser::SpsState> sps = m_h264_bitstream_parser.sps();
+        std::optional<int> qp = m_h264_bitstream_parser.GetLastSliceQp();
+        std::optional<SpsParser::SpsState> sps = m_h264_bitstream_parser.sps();
 
         if (m_isConfiguredDecoder)
         {
@@ -195,7 +195,7 @@ namespace webrtc
                                            .build();
 
             // todo: measurement decoding time
-            absl::optional<int32_t> decodetime;
+            std::optional<int32_t> decodetime;
             m_decodedCompleteCallback->Decoded(decoded_frame, decodetime, qp);
         }
 
