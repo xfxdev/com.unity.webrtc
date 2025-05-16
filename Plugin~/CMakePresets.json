@@ -1,8 +1,8 @@
 ﻿{
-  "version": 3,
+  "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 20,
+    "minor": 28,
     "patch": 0
   },
   "configurePresets": [
@@ -37,7 +37,7 @@
           ]
         }
       }
-    },    
+    },
     {
       "name": "default-macos",
       "displayName": "Default macOS Config",
@@ -45,8 +45,9 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "generator": "Xcode",
       "cacheVariables": {
-        "CMAKE_OSX_ARCHITECTURES": "arm64;x86_64"
-      },      
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.13"
+      },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "hostOS": [
@@ -74,22 +75,64 @@
       }
     },
     {
-      "name": "default-ios",
-      "displayName": "Default iOS Config",
+      "name": "apple-base",
       "hidden": true,
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
       "generator": "Xcode",
-      "cacheVariables": {
-        "CMAKE_SYSTEM_NAME": "iOS",
-        "CMAKE_OSX_ARCHITECTURES": "arm64;x86_64",
-        "CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=": "NO"
-      },
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "hostOS": [
             "macOS"
           ]
         }
+      }
+    },
+    {
+      "name": "macos-base",
+      "inherits": "apple-base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "11.0",
+        "CMAKE_SYSTEM_NAME": "Darwin"
+      }
+    },
+    {
+      "name": "macos-arm64",
+      "inherits": "macos-base",
+      "description": "macOS ARM64 only (Apple Silicon)",
+      "cacheVariables": {
+        "CMAKE_OSX_ARCHITECTURES": "arm64"
+      }
+    },
+    {
+      "name": "ios-base",
+      "inherits": "apple-base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_SYSTEM_NAME": "iOS",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "14.0",
+        "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED": "NO",
+        "CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY": ""
+      }
+    },
+    {
+      "name": "ios-device",
+      "inherits": "ios-base",
+      "description": "iOS Device (arm64)",
+      "cacheVariables": {
+        "CMAKE_OSX_SYSROOT": "iphoneos",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH": "YES"
+      }
+    },
+    {
+      "name": "ios-simulator",
+      "inherits": "ios-base",
+      "description": "iOS Simulator (arm64 + x86_64)",
+      "cacheVariables": {
+        "CMAKE_OSX_SYSROOT": "iphonesimulator",
+        "CMAKE_OSX_ARCHITECTURES": "arm64;x86_64",
+        "CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH": "NO"
       }
     },
     {
@@ -119,7 +162,7 @@
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
           "intelliSenseMode": "windows-clang-x64"
         }
-      }      
+      }
     },
     {
       "name": "x64-windows-clang",
@@ -131,23 +174,13 @@
       }
     },
     {
-      "name": "macos",
-      "description": "Sets x86_64 and arm64 arch, generator, compilers",
-      "inherits": "default-macos"
-    },
-    {
       "name": "x86_64-linux",
       "description": "Sets x86_64 arch, generator, compilers",
       "inherits": "default-linux",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-11",
-        "CMAKE_CXX_COMPILER": "clang++-11"
+        "CMAKE_C_COMPILER": "clang-14",
+        "CMAKE_CXX_COMPILER": "clang++-14"
       }
-    },
-    {
-      "name": "ios",
-      "description": "Sets x86_64 and arm64 arch, generator, compilers",
-      "inherits": "default-ios"
     },
     {
       "name": "armv7-android",
@@ -214,22 +247,6 @@
       "configurePreset": "x64-windows-clang",
       "configuration": "Release",
       "cleanFirst": true
-    },    
-    {
-      "name": "debug-macos",
-      "displayName": "Build Debug",
-      "description": "Debug build for macOS",
-      "configurePreset": "macos",
-      "configuration": "Debug",
-      "verbose": true
-    },
-    {
-      "name": "release-macos",
-      "displayName": "Build Release",
-      "description": "Release build for macOS",
-      "configurePreset": "macos",
-      "configuration": "Release",
-      "cleanFirst": true
     },
     {
       "name": "debug-linux",
@@ -264,40 +281,75 @@
       "cleanFirst": true
     },
     {
-      "name": "debug-ios",
-      "displayName": "Build Debug",
-      "description": "Debug build for iOS",
-      "configurePreset": "ios",
+      "name": "macos-arm64-debug",
+      "configurePreset": "macos-arm64",
       "configuration": "Debug",
       "verbose": true
     },
     {
-      "name": "release-ios",
-      "displayName": "Build Release",
-      "description": "Release build for iOS",
-      "configurePreset": "ios",
+      "name": "macos-arm64-release",
+      "configurePreset": "macos-arm64",
       "configuration": "Release",
       "cleanFirst": true
-    }    
+    },
+    {
+      "name": "ios-device-debug",
+      "configurePreset": "ios-device",
+      "configuration": "Debug",
+      "verbose": true
+    },
+    {
+      "name": "ios-device-release",
+      "configurePreset": "ios-device",
+      "configuration": "Release",
+      "cleanFirst": true
+    },
+    {
+      "name": "ios-simulator-debug",
+      "configurePreset": "ios-simulator",
+      "configuration": "Debug",
+      "verbose": true
+    },
+    {
+      "name": "ios-simulator-release",
+      "configurePreset": "ios-simulator",
+      "configuration": "Release",
+      "cleanFirst": true
+    }
   ],
   "testPresets": [
     {
       "name": "test-windows-clang",
       "configurePreset": "x64-windows-clang",
-      "output": {"outputOnFailure": true},
-      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
     },
     {
       "name": "test-macos",
-      "configurePreset": "macos",
-      "output": {"outputOnFailure": true},
-      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      "configurePreset": "macos-arm64",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
     },
     {
       "name": "test-linux",
       "configurePreset": "x86_64-linux",
-      "output": {"outputOnFailure": true},
-      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
     }
-  ]  
+  ]
 }

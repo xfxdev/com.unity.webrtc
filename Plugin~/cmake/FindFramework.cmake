@@ -13,7 +13,7 @@ if(iOS)
     "-framework UIKit"
     "-framework Network"
   )
-else()
+elseif(macOS)
   find_library(CORE_FOUNDATION Foundation)
   find_library(AV_FOUNDATION AVFoundation)
   find_library(CORE_SERVICES CoreServices)
@@ -24,6 +24,9 @@ else()
   find_library(AUDIO_TOOLBOX AudioToolbox)
   find_library(VIDEO_TOOLBOX VideoToolbox)
   find_library(METAL Metal)
+  find_library(IOSURFACE IOSurface)
+  find_library(SCREEN_CAPTURE_KIT ScreenCaptureKit)
+  find_library(APPKIT APPKit)
 
   set(FRAMEWORK_LIBS
     ${CORE_FOUNDATION}
@@ -36,5 +39,8 @@ else()
     ${AUDIO_TOOLBOX}
     ${VIDEO_TOOLBOX}
     ${METAL}
+    ${IOSURFACE}
+    ${SCREEN_CAPTURE_KIT}
+    ${APPKIT}
   )
 endif()
