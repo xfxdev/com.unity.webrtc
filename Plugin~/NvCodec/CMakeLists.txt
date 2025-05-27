@@ -17,10 +17,10 @@ if(Linux)
 endif()
 
 target_include_directories(
-  NvCodec PRIVATE ${CUDA_INCLUDE_DIRS} ${Vulkan_INCLUDE_DIR}
+  NvCodec PRIVATE ${CUDAToolkit_INCLUDE_DIRS} ${Vulkan_INCLUDE_DIR}
                   ${GLEW_INCLUDE_DIRS} ${NVCODEC_INCLUDE_DIR})
 
-set_target_properties(NvCodec PROPERTIES CUDA_ARCHITECTURES "75")
+set_target_properties(NvCodec PROPERTIES CUDA_ARCHITECTURES all)
 
 if(Windows)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)

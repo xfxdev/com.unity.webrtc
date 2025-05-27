@@ -1,21 +1,14 @@
-#!/bin/bash -eu
+#!/bin/bash
+set -euo pipefail
 
-export LIBWEBRTC_DOWNLOAD_URL=https://github.com/Unity-Technologies/com.unity.webrtc/releases/download/M116/webrtc-mac.zip
 export SOLUTION_DIR=$(pwd)/Plugin~
 
-# Install cmake
-export HOMEBREW_NO_AUTO_UPDATE=1
-brew install cmake
-
-# Download LibWebRTC 
-curl -L $LIBWEBRTC_DOWNLOAD_URL > webrtc.zip
-unzip -d $SOLUTION_DIR/webrtc webrtc.zip
-
-# Build UnityRenderStreaming Plugin 
 pushd "$SOLUTION_DIR"
-cmake --preset=macos
-cmake --build --preset=debug-macos --target=WebRTCLibTest
+
+cmake --preset=macos-arm64
+cmake --build --preset=macos-arm64-release --target=WebRTCLibTest
+
 popd
 
 # Copy test runner
-cp "$SOLUTION_DIR/out/build/macos/WebRTCPluginTest/Debug/WebRTCLibTest" .
+cp "$SOLUTION_DIR/out/build/macos-arm64/WebRTCPluginTest/Release/WebRTCLibTest" .

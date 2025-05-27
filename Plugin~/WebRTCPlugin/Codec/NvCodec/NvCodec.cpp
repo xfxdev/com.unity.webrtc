@@ -1,5 +1,7 @@
 #include "NvCodec.h"
 
+#include "pch.h"
+
 #include <absl/strings/match.h>
 #include <api/video_codecs/video_encoder_factory.h>
 #include <modules/video_coding/codecs/h264/include/h264.h>
@@ -10,7 +12,6 @@
 #include "NvEncoder/NvEncoderCuda.h"
 #include "NvEncoderImpl.h"
 #include "ProfilerMarkerFactory.h"
-#include "pch.h"
 
 namespace unity
 {
@@ -137,7 +138,7 @@ namespace webrtc
     }
 
     std::unique_ptr<NvEncoder> NvEncoder::Create(
-        const cricket::VideoCodec& codec,
+        const webrtc::Codec& codec,
         CUcontext context,
         CUmemorytype memoryType,
         NV_ENC_BUFFER_FORMAT format,
@@ -184,7 +185,7 @@ namespace webrtc
     }
 
     std::unique_ptr<NvDecoder>
-    NvDecoder::Create(const cricket::VideoCodec& codec, CUcontext context, ProfilerMarkerFactory* profiler)
+    NvDecoder::Create(const webrtc::Codec& codec, CUcontext context, ProfilerMarkerFactory* profiler)
     {
         return std::make_unique<NvDecoderImpl>(context, profiler);
     }
@@ -216,10 +217,11 @@ namespace webrtc
         return SupportedNvDecoderCodecs(context_);
     }
 
-    std::unique_ptr<VideoEncoder> NvEncoderFactory::CreateVideoEncoder(const SdpVideoFormat& format)
+    std::unique_ptr<VideoEncoder> NvEncoderFactory::Create(const Environment& env, const SdpVideoFormat& format)
     {
-        // todo(kazuki):: add CUmemorytype::CU_MEMORYTYPE_DEVICE option
-        return NvEncoder::Create(cricket::CreateVideoCodec(format), context_, CU_MEMORYTYPE_ARRAY, format_, profiler_);
+        // TODO
+        // add CUmemorytype::CU_MEMORYTYPE_DEVICE option
+        return NvEncoder::Create(webrtc::CreateVideoCodec(format), context_, CU_MEMORYTYPE_ARRAY, format_, profiler_);
     }
 
     NvDecoderFactory::NvDecoderFactory(CUcontext context, ProfilerMarkerFactory* profiler)
@@ -234,9 +236,9 @@ namespace webrtc
         return SupportedNvDecoderCodecs(context_);
     }
 
-    std::unique_ptr<VideoDecoder> NvDecoderFactory::CreateVideoDecoder(const SdpVideoFormat& format)
+    std::unique_ptr<VideoDecoder> NvDecoderFactory::Create(const Environment& env, const SdpVideoFormat& format)
     {
-        return NvDecoder::Create(cricket::CreateVideoCodec(format), context_, profiler_);
+        return NvDecoder::Create(webrtc::CreateVideoCodec(format), context_, profiler_);
     }
 } // namespace webrtc
 } // namespace unity

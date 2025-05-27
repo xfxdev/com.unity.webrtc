@@ -3,10 +3,11 @@
 #include <shared_mutex>
 
 // #include <common_video/include/video_frame_buffer.h>
+#include <IUnityRenderingExtensions.h>
+
 #include <rtc_base/ref_counted_object.h>
 
 #include "GraphicsDevice/GraphicsDevice.h"
-#include "IUnityRenderingExtensions.h"
 #include "PlatformBase.h"
 #include "Size.h"
 
@@ -34,7 +35,7 @@ namespace webrtc
     public:
         virtual Size GetSize() const = 0;
         virtual UnityRenderingExtTextureFormat GetFormat() const = 0;
-        virtual rtc::scoped_refptr<I420BufferInterface> ToI420() = 0;
+        virtual webrtc::scoped_refptr<I420BufferInterface> ToI420() = 0;
 
         virtual const GpuMemoryBufferHandle* handle() const = 0;
 
@@ -53,7 +54,7 @@ namespace webrtc
         bool CopyBuffer(NativeTexPtr ptr);
         UnityRenderingExtTextureFormat GetFormat() const override;
         Size GetSize() const override;
-        rtc::scoped_refptr<I420BufferInterface> ToI420() override;
+        webrtc::scoped_refptr<I420BufferInterface> ToI420() override;
         const GpuMemoryBufferHandle* handle() const override;
 
     protected:

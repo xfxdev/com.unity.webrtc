@@ -1,6 +1,8 @@
+#include "Codec/H264ProfileLevelId.h"
+
 #include "pch.h"
 
-#include "Codec/H264ProfileLevelId.h"
+#include <api/video_codecs/sdp_video_format.h>
 
 namespace unity
 {
@@ -34,18 +36,18 @@ namespace webrtc
 
     TEST(H264ProfileLevelId, H264IsSameProfile)
     {
-        SdpVideoFormat format1("H264");
+        webrtc::SdpVideoFormat format1("H264");
         H264ProfileLevelId id1(H264Profile::kProfileBaseline, H264Level::kLevel4_1);
         format1.parameters.emplace(kProfileLevelId, H264ProfileLevelIdToString(id1).value());
 
-        SdpVideoFormat format2("H264");
+        webrtc::SdpVideoFormat format2("H264");
         H264ProfileLevelId id2(H264Profile::kProfileBaseline, H264Level::kLevel5_1);
         format2.parameters.emplace(kProfileLevelId, H264ProfileLevelIdToString(id2).value());
 
         // ignore level
         EXPECT_TRUE(H264IsSameProfile(format1.parameters, format2.parameters));
 
-        SdpVideoFormat format3("H264");
+        webrtc::SdpVideoFormat format3("H264");
         H264ProfileLevelId id3(H264Profile::kProfileHigh, H264Level::kLevel4_1);
         format3.parameters.emplace(kProfileLevelId, H264ProfileLevelIdToString(id3).value());
 

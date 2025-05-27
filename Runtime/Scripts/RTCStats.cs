@@ -179,7 +179,7 @@ namespace Unity.WebRTC
             if (json == null)
             {
                 IntPtr jsonPtr = WebRTC.Context.StatsToJson(Id);
-                if (jsonPtr != null)
+                if (jsonPtr != IntPtr.Zero)
                 {
                     json = jsonPtr.AsAnsiStringWithFreeMem();
                 }
@@ -1293,45 +1293,55 @@ namespace Unity.WebRTC
 
         internal RTCStatsReport(IntPtr ptr)
         {
+            if (ptr == IntPtr.Zero)
+            {
+                throw new ArgumentException("Invalid stats report ptr");
+            }
             self = ptr;
+            m_dictStats = new Dictionary<string, RTCStats>();
+
             IntPtr ptrStatsTypeArray = IntPtr.Zero;
             IntPtr ptrStatsArray = WebRTC.Context.GetStatsList(self, out ulong length, ref ptrStatsTypeArray);
+            if (length == 0)
+            {
+                // allow this?
+                return;
+            }
             if (ptrStatsArray == IntPtr.Zero
                 || ptrStatsTypeArray == IntPtr.Zero)
             {
-                throw new ArgumentException("Invalid pointer.", "ptr");
+                throw new ArgumentException("Invalid stats list");
             }
 
             IntPtr[] array = ptrStatsArray.AsArray<IntPtr>((int)length);
             uint[] types = ptrStatsTypeArray.AsArray<uint>((int)length);
 
-            m_dictStats = new Dictionary<string, RTCStats>();
             for (int i = 0; i < (int)length; i++)
             {
                 RTCStatsType type = (RTCStatsType)types[i];
                 RTCStats stats = StatsFactory.Create(type, array[i]);
-                NativeMethods.ReleaseStats(array[i], (int)types[i]);
+                NativeMethods.ReleaseStats(array[i], (int)type);
                 if (stats == null)
                 {
-                    Debug.LogError($"failed to create RTCStats: {type}");
+                    Debug.LogError($"Failed to create RTCStats: {type}");
                     continue;
                 }
                 m_dictStats[stats.Id] = stats;
 
-                Debug.Log(
-                    $"RTCStats: {type} :\n" +
-                    string.Join("\n", stats.Dict.Select(kvp =>
-                        $"    {kvp.Key}: " + (kvp.Value switch
-                        {
-                            null => "null",
-                            Dictionary<string, double> nested =>
-                                "{" + string.Join(", ", nested.Select(n => $"{n.Key}={n.Value}")) + "}",
-                            _ => kvp.Value.ToString()
-                        })
-                    ))
-                );
+                // Debug.Log(
+                //     $"RTCStats: {type} :\n" +
+                //     string.Join("\n", stats.Dict.Select(kvp =>
+                //         $"    {kvp.Key}: " + (kvp.Value switch
+                //         {
+                //             null => "null",
+                //             Dictionary<string, double> nested =>
+                //                 "{" + string.Join(", ", nested.Select(n => $"{n.Key}={n.Value}")) + "}",
+                //             _ => kvp.Value.ToString()
+                //         })
+                //     ))
+                // );
 
-                Debug.Log($"json : {stats.ToJson()}");
+                // Debug.Log($"json : {stats.ToJson()}");
             }
 
             WebRTC.Table.Add(self, this);

@@ -1,5 +1,7 @@
 #include "Context.h"
 
+#include "pch.h"
+
 #include <api/create_peerconnection_factory.h>
 #include <api/task_queue/default_task_queue_factory.h>
 #include <rtc_base/ssl_adapter.h>
@@ -19,7 +21,6 @@
 #include "UnityVideoTrackSource.h"
 #include "Utils.h"
 #include "WebRTCPlugin.h"
-#include "pch.h"
 
 #if CUDA_PLATFORM
 #include "Logger.h"
@@ -150,17 +151,17 @@ namespace webrtc
     }
 
     Context::Context(ContextDependencies& dependencies)
-        : m_workerThread(rtc::Thread::CreateWithSocketServer())
-        , m_signalingThread(rtc::Thread::CreateWithSocketServer())
+        : m_workerThread(webrtc::Thread::CreateWithSocketServer())
+        , m_signalingThread(webrtc::Thread::CreateWithSocketServer())
         , m_taskQueueFactory(CreateDefaultTaskQueueFactory())
     {
         m_workerThread->Start();
         m_signalingThread->Start();
 
-        rtc::InitializeSSL();
+        webrtc::InitializeSSL();
 
         m_audioDevice = m_workerThread->BlockingCall(
-            [&]() { return rtc::make_ref_counted<DummyAudioDevice>(m_taskQueueFactory.get()); });
+            [&]() { return webrtc::make_ref_counted<DummyAudioDevice>(m_taskQueueFactory.get()); });
 
         std::unique_ptr<webrtc::VideoEncoderFactory> videoEncoderFactory =
             std::make_unique<UnityVideoEncoderFactory>(dependencies.device, dependencies.profiler);
@@ -168,8 +169,8 @@ namespace webrtc
         std::unique_ptr<webrtc::VideoDecoderFactory> videoDecoderFactory =
             std::make_unique<UnityVideoDecoderFactory>(dependencies.device, dependencies.profiler);
 
-        rtc::scoped_refptr<AudioEncoderFactory> audioEncoderFactory = CreateAudioEncoderFactory();
-        rtc::scoped_refptr<AudioDecoderFactory> audioDecoderFactory = CreateAudioDecoderFactory();
+        webrtc::scoped_refptr<AudioEncoderFactory> audioEncoderFactory = CreateAudioEncoderFactory();
+        webrtc::scoped_refptr<AudioDecoderFactory> audioDecoderFactory = CreateAudioDecoderFactory();
 
         m_peerConnectionFactory = CreatePeerConnectionFactory(
             m_workerThread.get(),
@@ -208,7 +209,7 @@ namespace webrtc
         }
     }
 
-    rtc::scoped_refptr<MediaStreamInterface> Context::CreateMediaStream(const std::string& streamId)
+    webrtc::scoped_refptr<MediaStreamInterface> Context::CreateMediaStream(const std::string& streamId)
     {
         return m_peerConnectionFactory->CreateLocalMediaStream(streamId);
     }
@@ -228,15 +229,16 @@ namespace webrtc
         return m_mapMediaStreamObserver[stream].get();
     }
 
-    rtc::scoped_refptr<UnityVideoTrackSource> Context::CreateVideoSource()
+    webrtc::scoped_refptr<UnityVideoTrackSource> Context::CreateVideoSource()
     {
-        return rtc::make_ref_counted<UnityVideoTrackSource>(false, absl::nullopt, m_taskQueueFactory.get());
+        return webrtc::make_ref_counted<UnityVideoTrackSource>(false, std::nullopt, m_taskQueueFactory.get());
     }
 
-    rtc::scoped_refptr<VideoTrackInterface>
+    webrtc::scoped_refptr<VideoTrackInterface>
     Context::CreateVideoTrack(const std::string& label, VideoTrackSourceInterface* source)
     {
-        return m_peerConnectionFactory->CreateVideoTrack(rtc::scoped_refptr<VideoTrackSourceInterface>(source), label);
+        return m_peerConnectionFactory->CreateVideoTrack(
+            webrtc::scoped_refptr<VideoTrackSourceInterface>(source), label);
     }
 
     void Context::StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track)
@@ -244,17 +246,17 @@ namespace webrtc
         // todo:(kazuki)
     }
 
-    rtc::scoped_refptr<AudioSourceInterface> Context::CreateAudioSource()
+    webrtc::scoped_refptr<AudioSourceInterface> Context::CreateAudioSource()
     {
         // avoid optimization specially for voice
-        cricket::AudioOptions audioOptions;
+        webrtc::AudioOptions audioOptions;
         audioOptions.auto_gain_control = false;
         audioOptions.noise_suppression = false;
         audioOptions.highpass_filter = false;
         return UnityAudioTrackSource::Create(audioOptions);
     }
 
-    rtc::scoped_refptr<AudioTrackInterface>
+    webrtc::scoped_refptr<AudioTrackInterface>
     Context::CreateAudioTrack(const std::string& label, webrtc::AudioSourceInterface* source)
     {
         return m_peerConnectionFactory->CreateAudioTrack(label, source);
@@ -270,7 +272,7 @@ namespace webrtc
 
     void Context::DeleteAudioTrackSinkAdapter(AudioTrackSinkAdapter* sink) { m_mapAudioTrackAndSink.erase(sink); }
 
-    void Context::AddStatsReport(const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
+    void Context::AddStatsReport(const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
     {
         std::lock_guard<std::mutex> lock(mutexStatsReport);
         m_listStatsReport.push_back(report);
@@ -283,7 +285,7 @@ namespace webrtc
         auto result = std::find_if(
             m_listStatsReport.begin(),
             m_listStatsReport.end(),
-            [report](rtc::scoped_refptr<const webrtc::RTCStatsReport> it) { return it.get() == report; });
+            [report](webrtc::scoped_refptr<const webrtc::RTCStatsReport> it) { return it.get() == report; });
 
         if (result == m_listStatsReport.end())
         {
@@ -296,19 +298,19 @@ namespace webrtc
     DataChannelInterface*
     Context::CreateDataChannel(PeerConnectionObject* obj, const char* label, const DataChannelInit& options)
     {
-        const RTCErrorOr<rtc::scoped_refptr<DataChannelInterface>> result =
+        const RTCErrorOr<webrtc::scoped_refptr<DataChannelInterface>> result =
             obj->connection->CreateDataChannelOrError(label, &options);
 
         if (!result.ok())
             return nullptr;
 
-        rtc::scoped_refptr<DataChannelInterface> channel = result.value();
+        webrtc::scoped_refptr<DataChannelInterface> channel = result.value();
 
         AddDataChannel(channel, *obj);
         return channel.get();
     }
 
-    void Context::AddDataChannel(rtc::scoped_refptr<DataChannelInterface> channel, PeerConnectionObject& pc)
+    void Context::AddDataChannel(webrtc::scoped_refptr<DataChannelInterface> channel, PeerConnectionObject& pc)
     {
         auto dataChannelObj = std::make_unique<DataChannelObject>(channel, pc);
         m_mapDataChannels[channel.get()] = std::move(dataChannelObj);
@@ -376,28 +378,40 @@ namespace webrtc
 
     const void** Context::GetStatsList(const RTCStatsReport* report, size_t* length, uint32_t** types)
     {
+        *length = 0;
+        *types = nullptr;
+
+        if (!report)
+        {
+            RTC_LOG(LS_ERROR) << "GetStatsList: invalid report ptr";
+            return nullptr;
+        }
+
+        const size_t size = report->size();
+        if (size == 0)
+        {
+            RTC_LOG(LS_INFO) << "GetStatsList: report->size() == 0";
+
+            return nullptr;
+        }
+
         std::lock_guard<std::mutex> lock(mutexStatsReport);
 
         auto result = std::find_if(
             m_listStatsReport.begin(),
             m_listStatsReport.end(),
-            [report](rtc::scoped_refptr<const webrtc::RTCStatsReport> it) { return it.get() == report; });
+            [report](webrtc::scoped_refptr<const webrtc::RTCStatsReport> it) { return it.get() == report; });
 
         if (result == m_listStatsReport.end())
         {
-            RTC_LOG(LS_INFO) << "Calling GetStatsList is failed. The reference of RTCStatsReport is not found.";
+            RTC_LOG(LS_INFO) << "GetStatsList: the reference of RTCStatsReport is not found.";
             return nullptr;
         }
 
-        const size_t size = report->size();
         *length = size;
         *types = static_cast<uint32_t*>(CoTaskMemAlloc(sizeof(uint32_t) * size));
         void* buf = CoTaskMemAlloc(sizeof(void*) * size);
         const void** ret = static_cast<const void**>(buf);
-        if (size == 0)
-        {
-            return ret;
-        }
         int i = 0;
         RTCStatsType type = RTCStatsType::Unknown;
         for (const auto& stats : *report)
@@ -405,19 +419,25 @@ namespace webrtc
             type = RTCStatsWrapperFactory::MapRTCStatsType(&stats);
             if (RTCStatsType::Unknown == type)
             {
-                DebugError("GetStatsList: unknown RTCStats type '%s'", stats.type());
+                RTC_LOG(LS_ERROR) << "GetStatsList: unknown RTCStats type: " << stats.type();
                 continue;
             }
             (*types)[i] = type;
             ret[i] = RTCStatsWrapperFactory::Wrap(&stats);
             if (ret[i] == nullptr)
             {
-                DebugError("GetStatsList: failed to wrap RTCStats of type '%s'", stats.type());
+                RTC_LOG(LS_ERROR) << "GetStatsList: failed to wrap RTCStats of type: " << stats.type();
                 continue;
             }
             i++;
         }
         *length = i;
+        if (*length == 0)
+        {
+            SAFE_COTASKMEMFREE(*types);
+            SAFE_COTASKMEMFREE(buf);
+            ret = nullptr;
+        }
         return ret;
     }
     const char* Context::StatsToJson(const char* statsID)

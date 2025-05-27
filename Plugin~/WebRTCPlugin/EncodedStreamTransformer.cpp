@@ -1,8 +1,8 @@
 #include "EncodedStreamTransformer.h"
 
-#include <api/make_ref_counted.h>
-
 #include "pch.h"
+
+#include <api/make_ref_counted.h>
 
 namespace unity
 {
@@ -13,7 +13,7 @@ namespace webrtc
     EncodedStreamTransformer::EncodedStreamTransformer() { }
 
     void EncodedStreamTransformer::RegisterTransformedFrameSinkCallback(
-        rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback, uint32_t ssrc)
+        webrtc::scoped_refptr<webrtc::TransformedFrameCallback> callback, uint32_t ssrc)
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
@@ -29,7 +29,7 @@ namespace webrtc
     }
 
     void
-    EncodedStreamTransformer::RegisterTransformedFrameCallback(rtc::scoped_refptr<TransformedFrameCallback> callback)
+    EncodedStreamTransformer::RegisterTransformedFrameCallback(webrtc::scoped_refptr<TransformedFrameCallback> callback)
     {
         RegisterTransformedFrameSinkCallback(callback, 0);
     }
@@ -44,7 +44,7 @@ namespace webrtc
             std::remove_if(
                 sink_callbacks_.begin(),
                 sink_callbacks_.end(),
-                [ssrc](std::pair<uint32_t, rtc::scoped_refptr<webrtc::TransformedFrameCallback>> v)
+                [ssrc](std::pair<uint32_t, webrtc::scoped_refptr<webrtc::TransformedFrameCallback>> v)
                 { return v.first == ssrc; }));
     }
 
@@ -73,9 +73,9 @@ namespace webrtc
         }
     }
 
-    rtc::scoped_refptr<EncodedStreamTransformer> EncodedStreamTransformer::Create()
+    webrtc::scoped_refptr<EncodedStreamTransformer> EncodedStreamTransformer::Create()
     {
-        return rtc::make_ref_counted<EncodedStreamTransformer>();
+        return webrtc::make_ref_counted<EncodedStreamTransformer>();
     }
 
 } // end namespace webrtc

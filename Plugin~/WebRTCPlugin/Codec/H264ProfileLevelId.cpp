@@ -44,7 +44,7 @@ namespace webrtc
     std::optional<webrtc::H264Level> H264SupportedLevel(int maxFramePixelCount, int maxFramerate, int maxBitrate)
     {
         if (maxFramePixelCount <= 0 || maxFramerate <= 0 || maxBitrate <= 0)
-            return absl::nullopt;
+            return std::nullopt;
 
         for (size_t i = 0; i < arraysize(kLevelConstraints); i++)
         {
@@ -59,7 +59,7 @@ namespace webrtc
         }
 
         // No level supported.
-        return absl::nullopt;
+        return std::nullopt;
     }
 
     int SupportedMaxFramerate(H264Level level, int maxFramePixelCount)

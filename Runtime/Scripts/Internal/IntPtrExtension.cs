@@ -10,7 +10,8 @@ namespace Unity.WebRTC
         {
             if (ptr == IntPtr.Zero)
             {
-                throw new ArgumentException("ptr is nullptr");
+                // throw new ArgumentException("ptr is nullptr");
+                return null;
             }
             string str = Marshal.PtrToStringAnsi(ptr);
             Marshal.FreeCoTaskMem(ptr);
@@ -20,7 +21,8 @@ namespace Unity.WebRTC
         {
             if (ptr == IntPtr.Zero)
             {
-                throw new ArgumentException("ptr is nullptr");
+                // throw new ArgumentException("ptr is nullptr");
+                return null;
             }
             return Marshal.PtrToStringAnsi(ptr);
         }

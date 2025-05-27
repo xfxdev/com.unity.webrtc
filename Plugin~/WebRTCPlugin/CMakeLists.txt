@@ -118,7 +118,7 @@ add_subdirectory(Codec)
 add_subdirectory(GraphicsDevice)
 
 if(Windows)
-  set(PROJECT_BINARY_DIR "${CMAKE_SOURCE_DIR}/../Runtime/Plugins/x86_64")
+  set(PROJECT_BINARY_DIR "${CMAKE_SOURCE_DIR}/../Runtime/Plugins/win")
 
   # Precompiled headers
   target_precompile_headers(WebRTCLib PRIVATE pch.h)
@@ -135,15 +135,16 @@ if(Windows)
   target_compile_options(WebRTCLib PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/GR->)
 
   target_include_directories(WebRTCLib SYSTEM PUBLIC
-    ${CUDA_INCLUDE_DIRS}
+    # ${CUDA_INCLUDE_DIRS}
     ${Vulkan_INCLUDE_DIR}
     ${NVCODEC_INCLUDE_DIR})
 
   target_link_libraries(WebRTCLib PRIVATE
     ${WEBRTC_LIBRARY}
     ${Vulkan_LIBRARY}
-    ${CUDA_CUDA_LIBRARY}
+    # ${CUDA_CUDA_LIBRARY}
     ${NVCODEC_LIBRARIES}
+    CUDA::cuda_driver
     d3d11
     winmm
     Secur32
@@ -191,7 +192,7 @@ elseif(iOS)
   set_target_properties(WebRTCLib PROPERTIES LINK_FLAGS "-ObjC")
 
 elseif(Linux)
-  set(PROJECT_BINARY_DIR "${CMAKE_SOURCE_DIR}/../Runtime/Plugins/x86_64")
+  set(PROJECT_BINARY_DIR "${CMAKE_SOURCE_DIR}/../Runtime/Plugins/linux")
 
   set(GLAD_SOURCES_DIR "${CMAKE_SOURCE_DIR}/glad")
   add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
@@ -208,14 +209,16 @@ elseif(Linux)
   find_package(PkgConfig REQUIRED)
 
   target_compile_definitions(WebRTCLib PUBLIC WEBRTC_LINUX WEBRTC_POSIX VK_NO_PROTOTYPES)
+  target_compile_options(WebRTCLib PUBLIC -fno-lto -fno-rtti)
 
   target_include_directories(WebRTCLib SYSTEM PUBLIC
-    ${CUDA_INCLUDE_DIRS}
+    # ${CUDA_INCLUDE_DIRS}
     glad_gl_core_46 glad_vulkan_11 glad_glx_14
     ${NVCODEC_INCLUDE_DIR})
 
   target_link_libraries(WebRTCLib PUBLIC
     NvCodec
+    CUDA::toolkit
     glad_gl_core_46 glad_vulkan_11 glad_glx_14
     ${WEBRTC_LIBRARY})
 
@@ -223,7 +226,7 @@ elseif(Linux)
   set_target_properties(WebRTCLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 elseif(Android)
-  set(PROJECT_BINARY_DIR "${CMAKE_SOURCE_DIR}/../Runtime/Plugins/Android")
+  set(PROJECT_BINARY_DIR "${CMAKE_SOURCE_DIR}/../Runtime/Plugins/android")
 
   target_compile_definitions(WebRTCLib PUBLIC WEBRTC_ANDROID WEBRTC_POSIX VK_NO_PROTOTYPES)
   target_compile_options(WebRTCLib PUBLIC -fno-lto -fno-rtti -fPIC)

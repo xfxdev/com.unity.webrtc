@@ -1,5 +1,7 @@
 #include "NvDecoderImpl.h"
 
+#include "pch.h"
+
 #include <api/video/i420_buffer.h>
 #include <api/video/video_codec_type.h>
 #include <modules/video_coding/include/video_error_codes.h>
@@ -9,7 +11,6 @@
 #include "NvDecoder/NvDecoder.h"
 #include "ProfilerMarkerFactory.h"
 #include "ScopedProfiler.h"
-#include "pch.h"
 
 namespace unity
 {
@@ -136,7 +137,10 @@ namespace webrtc
         do
         {
             nFrameReturnd = m_decoder->Decode(
-                input_image.data(), static_cast<int>(input_image.size()), CUVID_PKT_TIMESTAMP, input_image.Timestamp());
+                input_image.data(),
+                static_cast<int>(input_image.size()),
+                CUVID_PKT_TIMESTAMP,
+                input_image.RtpTimestamp());
         } while (nFrameReturnd == 0);
 
         m_isConfiguredDecoder = true;
@@ -159,7 +163,7 @@ namespace webrtc
             int64_t timeStamp;
             uint8_t* pFrame = m_decoder->GetFrame(&timeStamp);
 
-            rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer =
+            webrtc::scoped_refptr<webrtc::I420Buffer> i420_buffer =
                 m_buffer_pool.CreateI420Buffer(m_decoder->GetWidth(), m_decoder->GetHeight());
 
             int result;

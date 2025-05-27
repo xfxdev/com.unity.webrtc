@@ -1,6 +1,7 @@
+#include "GpuMemoryBuffer.h"
+
 #include "pch.h"
 
-#include "GpuMemoryBuffer.h"
 #include "GraphicsDevice/ITexture2D.h"
 
 namespace unity
@@ -76,7 +77,7 @@ namespace webrtc
 
     Size GpuMemoryBufferFromUnity::GetSize() const { return size_; }
 
-    rtc::scoped_refptr<I420BufferInterface> GpuMemoryBufferFromUnity::ToI420()
+    webrtc::scoped_refptr<I420BufferInterface> GpuMemoryBufferFromUnity::ToI420()
     {
         using namespace std::chrono_literals;
         if (!device_->WaitSync(textureCpuRead_.get()))

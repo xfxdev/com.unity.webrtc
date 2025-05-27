@@ -1,3 +1,5 @@
+#include "VideoFrameUtil.h"
+
 #include "pch.h"
 
 #include <api/make_ref_counted.h>
@@ -5,20 +7,19 @@
 
 #include "GpuMemoryBuffer.h"
 #include "GraphicsDevice/ITexture2D.h"
-#include "VideoFrameUtil.h"
 
 namespace unity
 {
 namespace webrtc
 {
 
-    rtc::scoped_refptr<VideoFrame>
+    webrtc::scoped_refptr<VideoFrame>
     CreateTestFrame(IGraphicsDevice* device, const ITexture2D* texture, UnityRenderingExtTextureFormat format)
     {
         NativeTexPtr ptr = NativeTexPtr(texture->GetNativeTexturePtrV());
         Size size = Size(static_cast<int>(texture->GetWidth()), static_cast<int>(texture->GetHeight()));
 
-        auto buffer = rtc::make_ref_counted<GpuMemoryBufferFromUnity>(device, size, format);
+        auto buffer = webrtc::make_ref_counted<GpuMemoryBufferFromUnity>(device, size, format);
 
         if (!buffer->CopyBuffer(ptr))
             return nullptr;

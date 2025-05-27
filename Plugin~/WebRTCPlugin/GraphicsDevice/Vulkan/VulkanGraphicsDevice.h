@@ -1,9 +1,11 @@
 #pragma once
 
-#include <IUnityGraphicsVulkan.h>
-#include <api/video/i420_buffer.h>
 #include <condition_variable>
 #include <memory>
+
+#include <IUnityGraphicsVulkan.h>
+
+#include <api/video/i420_buffer.h>
 #include <vulkan/vulkan.h>
 
 #include "PlatformBase.h"
@@ -61,7 +63,7 @@ namespace webrtc
         bool ResetSync(const ITexture2D* texture) override;
         bool WaitIdleForTest() override;
         bool UpdateState() override;
-        rtc::scoped_refptr<I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
+        webrtc::scoped_refptr<I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
 
 #if CUDA_PLATFORM
         bool IsCudaSupport() override { return m_isCudaSupport; }

@@ -1,6 +1,6 @@
---- libvpx_vp8_encoder.cc	2023-10-16 16:47:15.259207300 +0900
-+++ libvpx_vp8_encoder.cc.patch	2023-10-16 16:47:02.581135100 +0900
-@@ -175,12 +175,14 @@ bool IsCompatibleVideoFrameBufferType(Vi
+--- ./libvpx_vp8_encoder.cc	2025-05-19 15:51:58
++++ ./libvpx_vp8_encoder2.cc	2025-05-19 15:56:05
+@@ -214,12 +214,14 @@
    return left == right;
  }
  
@@ -17,7 +17,7 @@
        raw_image->planes[VPX_PLANE_Y] =
            const_cast<uint8_t*>(i420_buffer->DataY());
        raw_image->planes[VPX_PLANE_U] =
-@@ -194,7 +196,9 @@ void SetRawImagePlanes(vpx_image_t* raw_
+@@ -233,7 +235,9 @@
      }
      case VideoFrameBuffer::Type::kNV12: {
        const NV12BufferInterface* nv12_buffer = buffer->GetNV12();
@@ -28,18 +28,18 @@
        raw_image->planes[VPX_PLANE_Y] =
            const_cast<uint8_t*>(nv12_buffer->DataY());
        raw_image->planes[VPX_PLANE_U] =
-@@ -208,6 +212,7 @@ void SetRawImagePlanes(vpx_image_t* raw_
+@@ -247,6 +251,7 @@
      default:
        RTC_DCHECK_NOTREACHED();
    }
 +  return true;
  }
  
- }  // namespace
-@@ -1376,7 +1381,9 @@ LibvpxVp8Encoder::PrepareBuffers(rtc::sc
+ // Helper class used to temporarily change the frame drop threshold for an
+@@ -1496,7 +1501,9 @@
    // Prepare `raw_images_` from `mapped_buffer` and, if simulcast, scaled
    // versions of `buffer`.
-   std::vector<rtc::scoped_refptr<VideoFrameBuffer>> prepared_buffers;
+   std::vector<scoped_refptr<VideoFrameBuffer>> prepared_buffers;
 -  SetRawImagePlanes(&raw_images_[0], mapped_buffer.get());
 +  if (!SetRawImagePlanes(&raw_images_[0], mapped_buffer.get())) {
 +    return {};
@@ -47,7 +47,7 @@
    prepared_buffers.push_back(mapped_buffer);
    for (size_t i = 1; i < encoders_.size(); ++i) {
      // Native buffers should implement optimized scaling and is the preferred
-@@ -1419,7 +1426,9 @@ LibvpxVp8Encoder::PrepareBuffers(rtc::sc
+@@ -1539,7 +1546,9 @@
            << VideoFrameBufferTypeToString(mapped_buffer->type());
        return {};
      }

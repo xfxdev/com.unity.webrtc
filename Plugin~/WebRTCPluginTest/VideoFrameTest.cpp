@@ -1,10 +1,9 @@
 #include "pch.h"
 
 #include "GpuMemoryBuffer.h"
-#include "VideoFrameUtil.h"
-
 #include "GraphicsDevice/ITexture2D.h"
 #include "GraphicsDeviceContainer.h"
+#include "VideoFrameUtil.h"
 
 namespace unity
 {
@@ -44,7 +43,7 @@ namespace webrtc
         std::unique_ptr<ITexture2D> tex =
             std::unique_ptr<ITexture2D>(device_->CreateDefaultTextureV(kWidth, kHeight, kFormat));
         EXPECT_TRUE(device_->WaitIdleForTest());
-        rtc::scoped_refptr<VideoFrame> videoFrame = CreateTestFrame(device_, tex.get(), kFormat);
+        webrtc::scoped_refptr<VideoFrame> videoFrame = CreateTestFrame(device_, tex.get(), kFormat);
         EXPECT_TRUE(device_->WaitIdleForTest());
         ASSERT_NE(videoFrame, nullptr);
     }

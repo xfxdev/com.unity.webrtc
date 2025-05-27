@@ -2,6 +2,7 @@
 
 #pragma region std headers
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #pragma endregion
@@ -37,13 +38,13 @@
 #endif
 
 #if SUPPORT_D3D11 && SUPPORT_D3D12
-#include <IUnityGraphicsD3D11.h>
-#include <IUnityGraphicsD3D12.h>
 #include <comdef.h>
-#include <cudaD3D11.h>
 #include <d3d11.h>
 #include <d3d11_4.h>
 #include <d3d12.h>
+#include <cudaD3D11.h>
+#include <IUnityGraphicsD3D11.h>
+#include <IUnityGraphicsD3D12.h>
 
 #include <wrl/client.h>
 #endif
@@ -95,15 +96,15 @@ namespace unity
 {
 namespace webrtc
 {
-    void LogPrint(rtc::LoggingSeverity severity, const char* fmt, ...);
-    void LogPrint(rtc::LoggingSeverity severity, const wchar_t* fmt, ...);
+    void LogPrint(::webrtc::LoggingSeverity severity, const char* fmt, ...);
+    void LogPrint(::webrtc::LoggingSeverity severity, const wchar_t* fmt, ...);
     void checkf(bool result, const char* msg);
-#define DebugLog(...) LogPrint(rtc::LoggingSeverity::LS_INFO, "webrtc Log: " __VA_ARGS__)
-#define DebugWarning(...) LogPrint(rtc::LoggingSeverity::LS_WARNING, "webrtc Warning: " __VA_ARGS__)
-#define DebugError(...) LogPrint(rtc::LoggingSeverity::LS_ERROR, "webrtc Error: " __VA_ARGS__)
-#define DebugLogW(...) LogPrint(rtc::LoggingSeverity::LS_INFO, L"webrtc Log: " __VA_ARGS__)
-#define DebugWarningW(...) LogPrint(rtc::LoggingSeverity::LS_WARNING, L"webrtc Warning: " __VA_ARGS__)
-#define DebugErrorW(...) LogPrint(rtc::LoggingSeverity::LS_ERROR, L"webrtc Error: " __VA_ARGS__)
+#define DebugLog(...) LogPrint(webrtc::LoggingSeverity::LS_INFO, "webrtc Log: " __VA_ARGS__)
+#define DebugWarning(...) LogPrint(webrtc::LoggingSeverity::LS_WARNING, "webrtc Warning: " __VA_ARGS__)
+#define DebugError(...) LogPrint(webrtc::LoggingSeverity::LS_ERROR, "webrtc Error: " __VA_ARGS__)
+#define DebugLogW(...) LogPrint(webrtc::LoggingSeverity::LS_INFO, L"webrtc Log: " __VA_ARGS__)
+#define DebugWarningW(...) LogPrint(webrtc::LoggingSeverity::LS_WARNING, L"webrtc Warning: " __VA_ARGS__)
+#define DebugErrorW(...) LogPrint(webrtc::LoggingSeverity::LS_ERROR, L"webrtc Error: " __VA_ARGS__)
 #define NV_RESULT(NvFunction) NvFunction == NV_ENC_SUCCESS
 
 #if !UNITY_WIN

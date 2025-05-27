@@ -1,6 +1,9 @@
+#include "Codec/NvCodec/NvEncoderImpl.h"
+
 #include "pch.h"
 
-#include "Codec/NvCodec/NvEncoderImpl.h"
+#include <modules/video_coding/include/video_error_codes.h>
+
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDeviceContainer.h"
 #include "NvCodecUtils.h"
@@ -40,8 +43,8 @@ namespace webrtc
 
     TEST_P(NvEncoderImplTest, CanInitializeWithDefaultParameters)
     {
-        cricket::VideoCodec codec = cricket::CreateVideoCodec(cricket::kH264CodecName);
-        codec.SetParam(cricket::kH264FmtpProfileLevelId, kProfileLevelIdString());
+        webrtc::Codec codec = webrtc::CreateVideoCodec(webrtc::kH264CodecName);
+        codec.SetParam(webrtc::kH264FmtpProfileLevelId, kProfileLevelIdString());
         NvEncoderImpl encoder(codec, context_, CU_MEMORYTYPE_ARRAY, NV_ENC_BUFFER_FORMAT_ARGB, nullptr);
 
         VideoCodec codec_settings;
@@ -53,8 +56,8 @@ namespace webrtc
     {
         H264ProfileLevelId profileLevelId(H264Profile::kProfileBaseline, H264Level::kLevel5_1);
 
-        cricket::VideoCodec codec = cricket::CreateVideoCodec(cricket::kH264CodecName);
-        codec.SetParam(cricket::kH264FmtpProfileLevelId, *H264ProfileLevelIdToString(profileLevelId));
+        webrtc::Codec codec = webrtc::CreateVideoCodec(webrtc::kH264CodecName);
+        codec.SetParam(webrtc::kH264FmtpProfileLevelId, *H264ProfileLevelIdToString(profileLevelId));
         NvEncoderImpl encoder(codec, context_, CU_MEMORYTYPE_ARRAY, NV_ENC_BUFFER_FORMAT_ARGB, nullptr);
 
         VideoCodec codec_settings;
@@ -69,8 +72,8 @@ namespace webrtc
     {
         H264ProfileLevelId profileLevelId(H264Profile::kProfileBaseline, H264Level::kLevel5_1);
 
-        cricket::VideoCodec codec = cricket::CreateVideoCodec(cricket::kH264CodecName);
-        codec.SetParam(cricket::kH264FmtpProfileLevelId, *H264ProfileLevelIdToString(profileLevelId));
+        webrtc::Codec codec = webrtc::CreateVideoCodec(webrtc::kH264CodecName);
+        codec.SetParam(webrtc::kH264FmtpProfileLevelId, *H264ProfileLevelIdToString(profileLevelId));
         NvEncoderImpl encoder(codec, context_, CU_MEMORYTYPE_ARRAY, NV_ENC_BUFFER_FORMAT_ARGB, nullptr);
 
         VideoCodec codec_settings;

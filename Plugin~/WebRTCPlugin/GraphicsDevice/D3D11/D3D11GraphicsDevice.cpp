@@ -1,8 +1,9 @@
+#include "D3D11GraphicsDevice.h"
+
 #include "pch.h"
 
 #include <third_party/libyuv/include/libyuv/convert.h>
 
-#include "D3D11GraphicsDevice.h"
 #include "D3D11Texture2D.h"
 #include "GraphicsDevice/Cuda/GpuMemoryBufferCudaHandle.h"
 #include "GraphicsDevice/GraphicsUtility.h"
@@ -175,7 +176,7 @@ namespace webrtc
 
     //---------------------------------------------------------------------------------------------------------------------
 
-    rtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D* tex)
+    webrtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D* tex)
     {
         D3D11_MAPPED_SUBRESOURCE pMappedResource;
 
@@ -193,7 +194,7 @@ namespace webrtc
         const int32_t width = static_cast<int32_t>(tex->GetWidth());
         const int32_t height = static_cast<int32_t>(tex->GetHeight());
 
-        rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
+        webrtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
         libyuv::ARGBToI420(
             static_cast<uint8_t*>(pMappedResource.pData),
             static_cast<int32_t>(pMappedResource.RowPitch),

@@ -5,6 +5,7 @@
 // Unless expressly provided otherwise, the Software under this license is made available strictly on an “AS IS” BASIS WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.Please review the license for details on these and other terms and conditions.
 
 #pragma once
+#include "IUnityGraphics.h"
 #include "IUnityInterface.h"
 
 #ifndef UNITY_VULKAN_HEADER
@@ -99,14 +100,14 @@ enum UnityVulkanEventRenderPassPreCondition
     // This is the default precondition
     kUnityVulkanRenderPass_DontCare,
 
-    // Make sure that there is currently no RenderPass in progress.
-    // This allows e.g. resource uploads.
+    // Make sure that there is currently RenderPass in progress.
     // There are no guarantees about the currently bound descriptor sets, vertex buffers, index buffers and pipeline objects
     // Unity does however set dynamic pipeline set VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR based on the current settings
     // If used in combination with the SRP RenderPass API the resuls is undefined
     kUnityVulkanRenderPass_EnsureInside,
 
     // Make sure that there is currently no RenderPass in progress.
+    // This allows e.g. resource uploads.
     // Ends the current render pass (and resumes it afterwards if needed)
     // If used in combination with the SRP RenderPass API the resuls is undefined.
     kUnityVulkanRenderPass_EnsureOutside
@@ -257,8 +258,8 @@ UNITY_DECLARE_INTERFACE(IUnityGraphicsVulkanV2)
     // Most rules/restrictions for implementing a Vulkan layer apply
     // Returns true on success, false on failure (typically because it is used too late)
     bool(UNITY_INTERFACE_API * AddInterceptInitialization)(UnityVulkanInitCallback func, void* userdata, int32_t priority);
-
     // Remove vulkan intercept initialization callback.
+
     // Removal will not take effect until the next time vulkan is initialized.
     bool(UNITY_INTERFACE_API * RemoveInterceptInitialization)(UnityVulkanInitCallback func);
 };

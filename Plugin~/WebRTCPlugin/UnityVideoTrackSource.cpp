@@ -1,18 +1,19 @@
 #include "UnityVideoTrackSource.h"
 
+#include "pch.h"
+
 #include "VideoFrameAdapter.h"
 #include "VideoFrameScheduler.h"
-#include "pch.h"
 
 namespace unity
 {
 namespace webrtc
 {
 
-    rtc::scoped_refptr<UnityVideoTrackSource> UnityVideoTrackSource::Create(
+    webrtc::scoped_refptr<UnityVideoTrackSource> UnityVideoTrackSource::Create(
         bool is_screencast, std::optional<bool> needs_denoising, TaskQueueFactory* taskQueueFactory)
     {
-        return rtc::make_ref_counted<UnityVideoTrackSource>(is_screencast, needs_denoising, taskQueueFactory);
+        return webrtc::make_ref_counted<UnityVideoTrackSource>(is_screencast, needs_denoising, taskQueueFactory);
     }
 
     UnityVideoTrackSource::UnityVideoTrackSource(
@@ -69,7 +70,7 @@ namespace webrtc
 
         const int orig_width = frame_->size().width();
         const int orig_height = frame_->size().height();
-        const int64_t now_us = rtc::TimeMicros();
+        const int64_t now_us = webrtc::TimeMicros();
         FrameAdaptationParams frame_adaptation_params = ComputeAdaptationParams(orig_width, orig_height, now_us);
         if (frame_adaptation_params.should_drop_frame)
         {
@@ -78,8 +79,8 @@ namespace webrtc
         }
 
         const webrtc::TimeDelta timestamp = frame_->timestamp();
-        rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
-            new rtc::RefCountedObject<VideoFrameAdapter>(std::move(frame_)));
+        webrtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
+            new webrtc::RefCountedObject<VideoFrameAdapter>(std::move(frame_)));
 
         ::webrtc::VideoFrame::Builder builder = ::webrtc::VideoFrame::Builder()
                                                     .set_video_frame_buffer(std::move(frame_adapter))
@@ -95,7 +96,7 @@ namespace webrtc
         scheduler_->SetMaxFramerateFps(static_cast<int>(maxFramerate));
     }
 
-    void UnityVideoTrackSource::OnFrameCaptured(rtc::scoped_refptr<VideoFrame> frame)
+    void UnityVideoTrackSource::OnFrameCaptured(webrtc::scoped_refptr<VideoFrame> frame)
     {
         SendFeedback();
 
