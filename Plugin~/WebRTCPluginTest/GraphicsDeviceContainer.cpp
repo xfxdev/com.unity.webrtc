@@ -1,7 +1,8 @@
+#include "GraphicsDeviceContainer.h"
+
 #include "pch.h"
 
 #include "GraphicsDevice/GraphicsDevice.h"
-#include "GraphicsDeviceContainer.h"
 
 #if SUPPORT_D3D11
 #include "GraphicsDevice/D3D12/D3D12GraphicsDevice.h"
@@ -12,9 +13,12 @@
 #endif
 
 #if SUPPORT_OPENGL_CORE
-#include "GraphicsDevice/OpenGL/OpenGLContext.h"
 #include <GLFW/glfw3.h>
+#if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>
+#endif
+
+#include "GraphicsDevice/OpenGL/OpenGLContext.h"
 #endif
 
 #if SUPPORT_OPENGL_ES
@@ -193,16 +197,14 @@ namespace webrtc
     static void* CreateDeviceVulkan()
     {
         // Extension
-        std::vector<const char*> instanceExtensions = {
-            VK_KHR_SURFACE_EXTENSION_NAME,
+        std::vector<const char*> instanceExtensions = { VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef _WIN32
-            VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+                                                        VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #endif
 #if defined(_DEBUG)
-            VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+                                                        VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
 #endif
-            VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME
-        };
+                                                        VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME };
 
         std::vector<const char*> deviceExtensions = {
 
@@ -402,9 +404,13 @@ namespace webrtc
 
             const GLuint kWidth = 320;
             const GLuint kHeight = 240;
+#if defined(LEAK_SANITIZER)
             __lsan_disable();
+#endif
             s_window = glfwCreateWindow(kWidth, kHeight, "test", nullptr, nullptr);
+#if defined(LEAK_SANITIZER)
             __lsan_enable();
+#endif
             glfwMakeContextCurrent(s_window);
             s_glfwInitialized = true;
         }

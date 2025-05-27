@@ -5,13 +5,11 @@
 #include <cudaGL.h>
 #endif
 
-#include "third_party/libyuv/include/libyuv.h"
-
 #include "GraphicsDevice/GraphicsUtility.h"
+#include "OpenGLContext.h"
 #include "OpenGLGraphicsDevice.h"
 #include "OpenGLTexture2D.h"
-
-#include "OpenGLContext.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 #if CUDA_PLATFORM
 #include "GraphicsDevice/Cuda/GpuMemoryBufferCudaHandle.h"
@@ -216,7 +214,7 @@ namespace webrtc
 #endif
     }
 
-    rtc::scoped_refptr<webrtc::I420Buffer> OpenGLGraphicsDevice::ConvertRGBToI420(ITexture2D* tex)
+    webrtc::scoped_refptr<webrtc::I420Buffer> OpenGLGraphicsDevice::ConvertRGBToI420(ITexture2D* tex)
     {
         if (!OpenGLContext::CurrentContext())
             contexts_.push_back(OpenGLContext::CreateGLContext(mainContext_.get()));
@@ -246,7 +244,7 @@ namespace webrtc
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
         // RGBA -> I420
-        rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
+        webrtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
         libyuv::ABGRToI420(
             static_cast<uint8_t*>(data),
             width * 4,

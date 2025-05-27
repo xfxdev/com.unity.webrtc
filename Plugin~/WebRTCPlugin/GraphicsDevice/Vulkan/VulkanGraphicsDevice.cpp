@@ -1,10 +1,11 @@
+#include "VulkanGraphicsDevice.h"
+
 #include "pch.h"
 
 #include <third_party/libyuv/include/libyuv/convert.h>
 
 #include "GraphicsDevice/GraphicsUtility.h"
 #include "UnityVulkanInterfaceFunctions.h"
-#include "VulkanGraphicsDevice.h"
 #include "VulkanTexture2D.h"
 #include "VulkanUtility.h"
 #include "WebRTCMacros.h"
@@ -369,7 +370,7 @@ namespace webrtc
         return true;
     }
 
-    rtc::scoped_refptr<webrtc::I420Buffer> VulkanGraphicsDevice::ConvertRGBToI420(ITexture2D* tex)
+    webrtc::scoped_refptr<webrtc::I420Buffer> VulkanGraphicsDevice::ConvertRGBToI420(ITexture2D* tex)
     {
         VulkanTexture2D* vulkanTexture = static_cast<VulkanTexture2D*>(tex);
         const int32_t width = static_cast<int32_t>(tex->GetWidth());
@@ -386,7 +387,7 @@ namespace webrtc
         }
 
         // convert format to i420
-        rtc::scoped_refptr<webrtc::I420Buffer> i420Buffer = webrtc::I420Buffer::Create(width, height);
+        webrtc::scoped_refptr<webrtc::I420Buffer> i420Buffer = webrtc::I420Buffer::Create(width, height);
         libyuv::ARGBToI420(
             (const uint8_t*)data,
             rowPitch,
@@ -459,10 +460,10 @@ namespace webrtc
         const VulkanTexture2D* vulkanTexture = static_cast<const VulkanTexture2D*>(texture);
         std::unique_lock<std::mutex> lock(m_LastStateMtx);
 
-        bool ret =
-            m_LastStateCond.wait_until(lock, std::chrono::system_clock::now() + m_syncTimeout, [vulkanTexture, this] {
-                return vulkanTexture->currentFrameNumber <= m_LastState.safeFrameNumber;
-            });
+        bool ret = m_LastStateCond.wait_until(
+            lock,
+            std::chrono::system_clock::now() + m_syncTimeout,
+            [vulkanTexture, this] { return vulkanTexture->currentFrameNumber <= m_LastState.safeFrameNumber; });
         return ret;
     }
 

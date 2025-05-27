@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <rtc_base/task_utils/repeating_task.h>
 
 #include "VideoFrame.h"

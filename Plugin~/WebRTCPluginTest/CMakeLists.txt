@@ -40,13 +40,14 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.11.0)
+  GIT_TAG v1.17.0)
 
 FetchContent_GetProperties(googletest)
 if(NOT googletest_POPULATED)
-  FetchContent_Populate(googletest)
+  # FetchContent_Populate(googletest)
+  FetchContent_MakeAvailable(googletest)
 
-  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+  # add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 endif()
 
 include(GoogleTest)
@@ -89,8 +90,8 @@ if(Windows)
     WebRTCLibTest
     PRIVATE ${WEBRTC_LIBRARY}
             ${Vulkan_LIBRARY}
-            ${CUDA_CUDA_LIBRARY}
             ${NVCODEC_LIBRARIES}
+            CUDA::toolkit
             gtest
             gmock
             gtest_main
@@ -106,7 +107,7 @@ if(Windows)
             Strmiids
             delayimp.lib)
   target_include_directories(
-    WebRTCLibTest PRIVATE ${CUDA_INCLUDE_DIRS} ${Vulkan_INCLUDE_DIR}
+    WebRTCLibTest PRIVATE ${Vulkan_INCLUDE_DIR}
                           ${NVCODEC_INCLUDE_DIR})
 
   set_target_properties(
@@ -116,8 +117,14 @@ if(Windows)
       "-delayload:nvcuda.dll -delayload:nvEncodeAPI64.dll -delayload:nvcuvid.dll -delayload:vulkan-1.dll"
       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 elseif(macOS)
-  set(CMAKE_C_FLAGS "-x objective-c")
-  set(CMAKE_CXX_FLAGS "-x objective-c++")
+  # set(CMAKE_C_FLAGS "-x objective-c")
+  # set(CMAKE_CXX_FLAGS "-x objective-c++")
+  target_compile_options(WebRTCLibTest PRIVATE
+    -fno-lto
+    -fno-rtti
+    "$<$<COMPILE_LANGUAGE:C>:-xobjective-c>"
+    "$<$<COMPILE_LANGUAGE:CXX>:-xobjective-c++>"
+  )
 
   set_target_properties(
     WebRTCLibTest
@@ -126,15 +133,15 @@ elseif(macOS)
                VISIBILITY_INLINES_HIDDEN ON)
   target_link_libraries(
     WebRTCLibTest
-    PRIVATE ${WEBRTC_LIBRARY}
-            ${OPENGL_LIBRARIES}
+    PRIVATE ${OPENGL_LIBRARIES}
             ${FRAMEWORK_LIBS}
             gtest
             gmock
             gtest_main
-            WebRTCLib)
-  target_include_directories(WebRTCLibTest PRIVATE ..
-                                                   ${WEBRTC_OBJC_INCLUDE_DIR})
+            WebRTCLib
+            WebRTC::WebRTC)
+  # target_include_directories(WebRTCLibTest PRIVATE ..
+  #                                                  ${WEBRTC_OBJC_INCLUDE_DIR})
 elseif(Linux)
   find_package(glfw3 REQUIRED)
 
@@ -152,13 +159,13 @@ elseif(Linux)
     WebRTCLibTest
     PRIVATE ${CMAKE_DL_LIBS}
             ${CMAKE_THREAD_LIBS_INIT}
+            CUDA::toolkit
             glfw
             gtest
             gmock
             gtest_main
             WebRTCLib)
-  target_include_directories(WebRTCLibTest PRIVATE .. ${CUDA_INCLUDE_DIRS}
-                                                   ${NVCODEC_INCLUDE_DIR})
+  target_include_directories(WebRTCLibTest PRIVATE .. ${NVCODEC_INCLUDE_DIR})
 elseif(iOS)
   set(CMAKE_C_FLAGS "-x objective-c")
   set(CMAKE_CXX_FLAGS "-x objective-c++")
@@ -171,15 +178,15 @@ elseif(iOS)
                MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}")
   target_link_libraries(
     WebRTCLibTest
-    PRIVATE ${WEBRTC_LIBRARY}
-            ${OPENGL_LIBRARIES}
+    PRIVATE ${OPENGL_LIBRARIES}
             ${FRAMEWORK_LIBS}
             gtest
             gmock
             gtest_main
-            WebRTCLib)
-  target_include_directories(WebRTCLibTest PRIVATE ..
-                                                   ${WEBRTC_OBJC_INCLUDE_DIR})
+            WebRTCLib
+            WebRTC::WebRTC)
+  # target_include_directories(WebRTCLibTest PRIVATE ..
+  #                                                  ${WEBRTC_OBJC_INCLUDE_DIR})
 elseif(Android)
   target_link_libraries(WebRTCLibTest PRIVATE gtest gmock gtest_main WebRTCLib)
 endif()

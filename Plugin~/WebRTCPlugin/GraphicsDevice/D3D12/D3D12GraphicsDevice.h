@@ -1,11 +1,12 @@
 #pragma once
 
-#include <comdef.h>
-#include <d3d12.h>
 #include <stdexcept>
-#include <wrl/client.h>
 
 #include <IUnityGraphicsD3D12.h>
+#include <comdef.h>
+#include <d3d12.h>
+
+#include <wrl/client.h>
 
 #include "D3D12Texture2D.h"
 #include "GraphicsDevice/Cuda/CudaContext.h"
@@ -82,7 +83,7 @@ namespace webrtc
 
         virtual ITexture2D*
         CreateCPUReadTextureV(uint32_t w, uint32_t h, UnityRenderingExtTextureFormat textureFormat) override;
-        virtual rtc::scoped_refptr<webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* texture) override;
+        virtual webrtc::scoped_refptr<webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* texture) override;
 
         bool IsCudaSupport() override { return m_isCudaSupport; }
         CUcontext GetCUcontext() override { return m_cudaContext.GetContext(); }

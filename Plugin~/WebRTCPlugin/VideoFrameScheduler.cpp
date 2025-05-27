@@ -1,10 +1,10 @@
 #include "VideoFrameScheduler.h"
 
+#include "pch.h"
+
 #include <functional>
 
 #include <rtc_base/event.h>
-
-#include "pch.h"
 
 namespace unity
 {
@@ -22,7 +22,7 @@ namespace webrtc
 
     VideoFrameScheduler::~VideoFrameScheduler()
     {
-        rtc::Event done;
+        webrtc::Event done;
 
         // Waiting for stopping task.
         queue_->PostTask(

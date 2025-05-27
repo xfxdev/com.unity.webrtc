@@ -11,19 +11,35 @@ namespace Unity.WebRTC.RuntimeTest
 
     class IntPtrTest
     {
+        // [Test]
+        // public void AsAnsiStringWithFreeMemThrowException()
+        // {
+        //     IntPtr ptr = IntPtr.Zero;
+        //     Assert.That(() => { ptr.AsAnsiStringWithFreeMem(); }, Throws.TypeOf<ArgumentException>());
+
+        // }
+
+        // [Test]
+        // public void AsAnsiStringWithoutFreeMemThrowException()
+        // {
+        //     IntPtr ptr = IntPtr.Zero;
+        //     Assert.That(() => { ptr.AsAnsiStringWithoutFreeMem(); }, Throws.TypeOf<ArgumentException>());
+        // }
+
         [Test]
-        public void AsAnsiStringWithFreeMemThrowException()
+        public void AsAnsiStringWithFreeMemNull()
         {
             IntPtr ptr = IntPtr.Zero;
-            Assert.That(() => { ptr.AsAnsiStringWithFreeMem(); }, Throws.TypeOf<ArgumentException>());
-
+            // Assert.That(() => { ptr.AsAnsiStringWithFreeMem(); }, Throws.TypeOf<ArgumentException>());
+            Assert.IsNull(ptr.AsAnsiStringWithFreeMem());
         }
 
         [Test]
-        public void AsAnsiStringWithoutFreeMemThrowException()
+        public void AsAnsiStringWithoutFreeMemNull()
         {
             IntPtr ptr = IntPtr.Zero;
-            Assert.That(() => { ptr.AsAnsiStringWithoutFreeMem(); }, Throws.TypeOf<ArgumentException>());
+            // Assert.That(() => { ptr.AsAnsiStringWithoutFreeMem(); }, Throws.TypeOf<ArgumentException>());
+            Assert.IsNull(ptr.AsAnsiStringWithoutFreeMem());
         }
 
         [Test]

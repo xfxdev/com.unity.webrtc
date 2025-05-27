@@ -1,8 +1,9 @@
+#include "Context.h"
+
 #include "pch.h"
 
 #include <rtc_base/ref_counted_object.h>
 
-#include "Context.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
 #include "GraphicsDeviceContainer.h"
@@ -183,7 +184,7 @@ namespace webrtc
         EXPECT_NE(nullptr, track);
         const auto renderer = context->CreateVideoRenderer(callback_videoframeresize, true);
         EXPECT_NE(nullptr, renderer);
-        track->AddOrUpdateSink(renderer, rtc::VideoSinkWants());
+        track->AddOrUpdateSink(renderer, webrtc::VideoSinkWants());
         track->RemoveSink(renderer);
         context->DeleteVideoRenderer(renderer);
     }

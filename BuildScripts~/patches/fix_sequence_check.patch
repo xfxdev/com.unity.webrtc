@@ -1,0 +1,24 @@
+--- src/rtc_base/synchronization/sequence_checker_internal.cc	2025-04-24 16:37:02
++++ src/rtc_base/synchronization/sequence_checker_internal_new.cc	2025-05-16 12:31:41
+@@ -50,8 +50,8 @@
+   // reset on the next call to IsCurrent().
+ }
+ 
+-#if RTC_DCHECK_IS_ON
+ std::string SequenceCheckerImpl::ExpectationToString() const {
++#if RTC_DCHECK_IS_ON
+   const TaskQueueBase* const current_queue = TaskQueueBase::Current();
+   const webrtc::PlatformThreadRef current_thread = webrtc::CurrentThreadRef();
+   MutexLock scoped_lock(&lock_);
+@@ -79,8 +79,10 @@
+   }
+ 
+   return message.Release();
+-}
++#else
++  return std::string();
+ #endif  // RTC_DCHECK_IS_ON
++}
+ 
+ }  // namespace webrtc_sequence_checker_internal
+ }  // namespace webrtc

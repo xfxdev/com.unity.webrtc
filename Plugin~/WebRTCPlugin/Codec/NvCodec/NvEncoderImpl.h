@@ -44,7 +44,7 @@ namespace webrtc
             void SetStreamState(bool send_stream);
         };
         NvEncoderImpl(
-            const cricket::VideoCodec& codec,
+            const webrtc::Codec& codec,
             CUcontext context,
             CUmemorytype memoryType,
             NV_ENC_BUFFER_FORMAT format,

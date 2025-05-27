@@ -1,7 +1,8 @@
+#include "GraphicsDevice.h"
+
 #include "pch.h"
 
 #include "GpuMemoryBuffer.h"
-#include "GraphicsDevice.h"
 
 #if SUPPORT_D3D11 && SUPPORT_D3D12
 #include "D3D11/D3D11GraphicsDevice.h"
@@ -85,7 +86,7 @@ namespace webrtc
             RTC_DCHECK_NOTREACHED();
             return nullptr;
         }
-        rtc::scoped_refptr<::webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override
+        webrtc::scoped_refptr<::webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override
         {
             RTC_DCHECK_NOTREACHED();
             return nullptr;
@@ -132,7 +133,7 @@ namespace webrtc
         }
 #endif
 #if SUPPORT_OPENGL_CORE || SUPPORT_OPENGL_ES || UNITY_WIN || UNITY_OSX
-        case kUnityGfxRendererOpenGLES20:
+        // case kUnityGfxRendererOpenGLES20:
         case kUnityGfxRendererOpenGLES30:
         case kUnityGfxRendererOpenGLCore:
         {
@@ -190,7 +191,7 @@ namespace webrtc
         }
 #endif
 #if SUPPORT_OPENGL_CORE || SUPPORT_OPENGL_ES || UNITY_WIN || UNITY_OSX
-        case kUnityGfxRendererOpenGLES20:
+        // case kUnityGfxRendererOpenGLES20:
         case kUnityGfxRendererOpenGLES30:
         case kUnityGfxRendererOpenGLCore:
         {

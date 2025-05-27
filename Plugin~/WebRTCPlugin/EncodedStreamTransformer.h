@@ -1,4 +1,7 @@
 #pragma once
+
+#include <mutex>
+
 #include <api/frame_transformer_interface.h>
 #include <rtc_base/synchronization/mutex.h>
 
@@ -24,18 +27,18 @@ namespace webrtc
         ~EncodedStreamTransformer() override { }
 
         void RegisterTransformedFrameSinkCallback(
-            rtc::scoped_refptr<webrtc::TransformedFrameCallback> callback, uint32_t ssrc) override;
-        void RegisterTransformedFrameCallback(rtc::scoped_refptr<TransformedFrameCallback> callback) override;
+            webrtc::scoped_refptr<webrtc::TransformedFrameCallback> callback, uint32_t ssrc) override;
+        void RegisterTransformedFrameCallback(webrtc::scoped_refptr<TransformedFrameCallback> callback) override;
 
         void UnregisterTransformedFrameCallback() override;
         void UnregisterTransformedFrameSinkCallback(uint32_t ssrc) override;
         void Transform(std::unique_ptr<::webrtc::TransformableFrameInterface> frame) override;
         void SendFrameToSink(std::unique_ptr<::webrtc::TransformableFrameInterface> frame);
 
-        static rtc::scoped_refptr<EncodedStreamTransformer> Create();
+        static webrtc::scoped_refptr<EncodedStreamTransformer> Create();
 
     private:
-        std::vector<std::pair<uint32_t, rtc::scoped_refptr<webrtc::TransformedFrameCallback>>> sink_callbacks_;
+        std::vector<std::pair<uint32_t, webrtc::scoped_refptr<webrtc::TransformedFrameCallback>>> sink_callbacks_;
         mutable std::mutex mutex_;
         static DelegateTransformedFrame s_callback;
     };

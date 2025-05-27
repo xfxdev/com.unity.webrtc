@@ -1,13 +1,13 @@
 #include "UnityAudioEncoderFactory.h"
 
+#include "pch.h"
+
 #include <api/audio_codecs/L16/audio_encoder_L16.h>
 #include <api/audio_codecs/audio_encoder_factory_template.h>
 #include <api/audio_codecs/g711/audio_encoder_g711.h>
 #include <api/audio_codecs/g722/audio_encoder_g722.h>
 #include <api/audio_codecs/opus/audio_encoder_multi_channel_opus.h>
 #include <api/audio_codecs/opus/audio_encoder_opus.h>
-
-#include "pch.h"
 
 using namespace ::webrtc;
 
@@ -51,7 +51,7 @@ namespace webrtc
         }
     };
 
-    rtc::scoped_refptr<AudioEncoderFactory> CreateAudioEncoderFactory()
+    webrtc::scoped_refptr<AudioEncoderFactory> CreateAudioEncoderFactory()
     {
         return ::webrtc::CreateAudioEncoderFactory<
             StereoSupportEncoder<AudioEncoderOpus>,

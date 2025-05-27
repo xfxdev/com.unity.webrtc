@@ -1,8 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include <d3d11.h>
 #include <d3d11_4.h>
-#include <memory>
+
 #include <wrl/client.h>
 
 #include "GraphicsDevice/Cuda/CudaContext.h"
@@ -15,6 +17,7 @@ namespace unity
 {
 namespace webrtc
 {
+    using namespace ::webrtc;
 
     class D3D11GraphicsDevice : public IGraphicsDevice
     {
@@ -36,7 +39,7 @@ namespace webrtc
         void Enter() override;
         void Leave() override;
 
-        virtual rtc::scoped_refptr<::webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
+        virtual webrtc::scoped_refptr<::webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
         bool IsCudaSupport() override { return m_isCudaSupport; }
         CUcontext GetCUcontext() override { return m_cudaContext.GetContext(); }
         NV_ENC_BUFFER_FORMAT GetEncodeBufferFormat() override { return NV_ENC_BUFFER_FORMAT_ARGB; }

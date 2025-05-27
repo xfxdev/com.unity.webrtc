@@ -1,9 +1,10 @@
+#include "D3D12GraphicsDevice.h"
+
 #include "pch.h"
 
 #include <third_party/libyuv/include/libyuv.h>
 
 #include "D3D12Constants.h"
-#include "D3D12GraphicsDevice.h"
 #include "D3D12Texture2D.h"
 #include "GraphicsDevice/Cuda/GpuMemoryBufferCudaHandle.h"
 #include "GraphicsDevice/D3D11/D3D11Texture2D.h"
@@ -148,10 +149,12 @@ namespace webrtc
         if (!isReadbackResource)
         {
             commandList->CopyResource(destResource, srcResource);
-            states.push_back(UnityGraphicsD3D12ResourceState {
-                srcResource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COPY_SOURCE });
-            states.push_back(UnityGraphicsD3D12ResourceState {
-                destResource, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COPY_DEST });
+            states.push_back(
+                UnityGraphicsD3D12ResourceState {
+                    srcResource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COPY_SOURCE });
+            states.push_back(
+                UnityGraphicsD3D12ResourceState {
+                    destResource, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_COPY_DEST });
         }
         else
         {
@@ -170,8 +173,9 @@ namespace webrtc
 
             commandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, nullptr);
 
-            states.push_back(UnityGraphicsD3D12ResourceState {
-                srcResource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COPY_SOURCE });
+            states.push_back(
+                UnityGraphicsD3D12ResourceState {
+                    srcResource, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_COPY_SOURCE });
         }
 
         ThrowIfFailed(commandList->Close());
@@ -334,7 +338,7 @@ namespace webrtc
     }
 
     //----------------------------------------------------------------------------------------------------------------------
-    rtc::scoped_refptr<webrtc::I420Buffer> D3D12GraphicsDevice::ConvertRGBToI420(ITexture2D* texture)
+    webrtc::scoped_refptr<webrtc::I420Buffer> D3D12GraphicsDevice::ConvertRGBToI420(ITexture2D* texture)
     {
         D3D12Texture2D* d3dTexture2d = reinterpret_cast<D3D12Texture2D*>(texture);
         if (!d3dTexture2d)
@@ -363,7 +367,7 @@ namespace webrtc
         }
 
         // RGBA -> I420
-        rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
+        webrtc::scoped_refptr<webrtc::I420Buffer> i420_buffer = webrtc::I420Buffer::Create(width, height);
         libyuv::ARGBToI420(
             static_cast<uint8_t*>(data),
             rowPitch,

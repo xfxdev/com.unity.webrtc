@@ -10,6 +10,8 @@ elseif(Windows)
   set(WEBRTC_DIR "${CMAKE_SOURCE_DIR}/webrtc/win")
 elseif(Linux)
   set(WEBRTC_DIR "${CMAKE_SOURCE_DIR}/webrtc/linux")
+elseif(Android)
+  set(WEBRTC_DIR "${CMAKE_SOURCE_DIR}/webrtc/android")
 else()
   message(FATAL_ERROR "Unsupported platform for WebRTC.")
 endif()
@@ -40,7 +42,7 @@ set(WEBRTC_LIBRARY_DIR
 # There is only `x64` on Windows, macOS, and Linux
 # iOS and macOS use universal binary contains `x64` and `arm64`
 if(Windows OR Linux)
-  set(WEBRTC_LIBRARY_DIR "${WEBRTC_LIBRARY_DIR}/x64")
+  # set(WEBRTC_LIBRARY_DIR "${WEBRTC_LIBRARY_DIR}/x64")
 elseif(Android)
   if(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
     set(_ANDROID_ARCH "x64")

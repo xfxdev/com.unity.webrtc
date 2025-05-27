@@ -3,17 +3,6 @@
 # https://cmake.org/cmake/help/latest/release/3.28.html
 cmake_minimum_required(VERSION 3.28)
 
-# Set Apple-specific deployment targets early 
-if(iOS)
-  set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET
-    "14.0"
-    CACHE STRING "Minimum iOS deployment version")
-# elseif(macOS)
-#   set(CMAKE_OSX_DEPLOYMENT_TARGET
-#     "10.13"
-#     CACHE STRING "Minimum OS X deployment version")
-endif()
-
 # Define the project
 project(
   webrtc
@@ -63,7 +52,8 @@ endif()
 # Linux-specific flags
 # Use lld linker instead of GNU ld.
 if(Linux)
-  add_link_options(-fuse-ld=lld-11)
+  # set in CMakePresets.json instead
+  # add_link_options(-fuse-ld=lld-11)
 endif()
 
 # set iterator debug level and compiler flags.
@@ -87,11 +77,18 @@ endif()
 
 if(Windows OR Linux)
   find_package(Vulkan REQUIRED)
-  find_package(CUDA REQUIRED)
+
+  # https://cmake.org/cmake/help/latest/module/FindCUDA.html#findcuda
+  # The FindCUDA module is deprecated.
+  # find_package(CUDA REQUIRED)
+  find_package(CUDAToolkit REQUIRED)
 
   # Building CUDA kernel is not supported with Clang compiler on Windows.
   # https://gitlab.kitware.com/cmake/cmake/-/issues/20776
   if((Windows AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC") OR Linux)
+
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-gpu-targets")
+
     enable_language(CUDA)
   endif()
 
